@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "Ruby on Rails 웹 프레임워크",
+  "display_order": 16,
+  "icon_name": "rails",
+  "name": "Ruby on Rails",
+  "requires_git": true,
+  "version": "1.0"
+}

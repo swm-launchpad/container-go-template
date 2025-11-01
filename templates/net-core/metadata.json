@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": ".NET Core 크로스플랫폼 웹 프레임워크",
+  "display_order": 18,
+  "icon_name": "dotnet",
+  "name": ".NET Core",
+  "requires_git": true,
+  "version": "1.0"
+}

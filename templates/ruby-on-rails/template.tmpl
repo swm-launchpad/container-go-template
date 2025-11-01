@@ -1,0 +1,35 @@
+FROM ruby:{{ .ruby_version }}-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache \
+    build-base \
+    postgresql-dev \
+    nodejs \
+    yarn
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle config set --local deployment true && \
+    bundle config set --local without development test && \
+    bundle install
+
+FROM ruby:{{ .ruby_version }}-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache \
+    postgresql-client \
+    nodejs \
+    tzdata
+
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY . .
+
+RUN addgroup -S rails && adduser -S rails -G rails && \
+    chown -R rails:rails /app
+
+USER rails
+
+EXPOSE {{ .app_port }}
+
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "{{ .app_port }}"]

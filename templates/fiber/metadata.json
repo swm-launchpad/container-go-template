@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "Go Fiber 고속 웹 프레임워크",
+  "display_order": 20,
+  "icon_name": "go",
+  "name": "Fiber",
+  "requires_git": true,
+  "version": "1.0"
+}

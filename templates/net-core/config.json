@@ -1,0 +1,51 @@
+{
+  "default_env": [
+    {
+      "key": "ASPNETCORE_ENVIRONMENT",
+      "value": "Production"
+    },
+    {
+      "key": "ASPNETCORE_URLS",
+      "value": "http://+:5000"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 5000,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "8.0",
+      "label": ".NET 버전",
+      "name": "dotnet_version",
+      "options": [
+        "7.0",
+        "8.0"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "App",
+      "label": "애플리케이션 이름",
+      "name": "app_name",
+      "options": [],
+      "type": "text"
+    },
+    {
+      "default": "5000",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "ASP.NET server port",
+      "internal_port": 5000,
+      "network_type": "http"
+    }
+  ]
+}

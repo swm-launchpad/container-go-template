@@ -1,0 +1,45 @@
+{
+  "default_env": [
+    {
+      "key": "RAILS_ENV",
+      "value": "production"
+    },
+    {
+      "key": "RAILS_LOG_TO_STDOUT",
+      "value": "true"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 3000,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "3.2",
+      "label": "Ruby 버전",
+      "name": "ruby_version",
+      "options": [
+        "3.1",
+        "3.2",
+        "3.3"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "3000",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "Rails server port",
+      "internal_port": 3000,
+      "network_type": "http"
+    }
+  ]
+}
