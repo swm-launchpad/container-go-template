@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "database"
+  ],
+  "description": "MongoDB NoSQL 문서 데이터베이스",
+  "display_order": 21,
+  "icon_name": "mongodb",
+  "name": "MongoDB",
+  "requires_git": false,
+  "version": "1.0"
+}

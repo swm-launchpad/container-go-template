@@ -1,0 +1,8 @@
+FROM mongo:{{ .mongo_version }}
+
+ENV MONGO_INITDB_ROOT_USERNAME={{ .root_username }}
+ENV MONGO_INITDB_ROOT_PASSWORD={{ .root_password }}
+
+EXPOSE {{ .mongo_port }}
+
+VOLUME ["/data/db", "/data/configdb"]

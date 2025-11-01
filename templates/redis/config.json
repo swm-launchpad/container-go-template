@@ -1,0 +1,47 @@
+{
+  "default_env": [
+    {
+      "key": "REDIS_PASSWORD",
+      "value": "{{ .redis_password }}"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 6379,
+      "network_type": "tcp"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "7.2",
+      "label": "Redis 버전",
+      "name": "redis_version",
+      "options": [
+        "7.0",
+        "7.2"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "6379",
+      "label": "Redis 포트",
+      "name": "redis_port",
+      "options": [],
+      "type": "number"
+    },
+    {
+      "default": "",
+      "label": "Redis 비밀번호",
+      "name": "redis_password",
+      "options": [],
+      "type": "password"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "Redis port",
+      "internal_port": 6379,
+      "network_type": "tcp"
+    }
+  ]
+}
