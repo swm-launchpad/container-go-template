@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "frontend"
+  ],
+  "description": "정적 HTML/CSS/JS 웹사이트",
+  "display_order": 9,
+  "icon_name": "nginx",
+  "name": "Static HTML",
+  "requires_git": true,
+  "version": "1.0"
+}

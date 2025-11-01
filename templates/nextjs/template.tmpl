@@ -1,0 +1,55 @@
+FROM node:{{ .node_version }}-alpine AS deps
+
+WORKDIR /app
+
+{{ if eq .package_manager "npm" }}
+COPY package*.json ./
+RUN npm ci
+{{ else if eq .package_manager "yarn" }}
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+{{ else }}
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
+{{ end }}
+
+FROM node:{{ .node_version }}-alpine AS builder
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+{{ if eq .package_manager "npm" }}
+RUN npm run build
+{{ else if eq .package_manager "yarn" }}
+RUN yarn build
+{{ else }}
+RUN pnpm build
+{{ end }}
+
+FROM node:{{ .node_version }}-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+
+USER nextjs
+
+EXPOSE {{ .app_port }}
+
+{{ if eq .package_manager "npm" }}
+CMD ["npm", "start"]
+{{ else if eq .package_manager "yarn" }}
+CMD ["yarn", "start"]
+{{ else }}
+CMD ["pnpm", "start"]
+{{ end }}

@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "frontend"
+  ],
+  "description": "Svelte 경량 프론트엔드 프레임워크",
+  "display_order": 8,
+  "icon_name": "svelte",
+  "name": "Svelte",
+  "requires_git": true,
+  "version": "1.0"
+}

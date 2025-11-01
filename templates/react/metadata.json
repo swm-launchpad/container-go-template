@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "frontend"
+  ],
+  "description": "React 기반 SPA 애플리케이션",
+  "display_order": 3,
+  "icon_name": "react",
+  "name": "React",
+  "requires_git": true,
+  "version": "1.0"
+}
