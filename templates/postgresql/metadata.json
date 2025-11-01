@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "database"
+  ],
+  "description": "PostgreSQL 템플릿",
+  "display_order": 0,
+  "icon_name": "postgresql",
+  "name": "PostgreSQL",
+  "requires_git": false,
+  "version": "1.0"
+}

@@ -1,0 +1,11 @@
+FROM postgres:{{ .version }}
+
+ENV POSTGRES_MAX_CONNECTIONS={{ .max_connections }}
+ENV POSTGRES_SHARED_BUFFERS={{ .shared_buffers }}
+
+RUN echo "max_connections = $POSTGRES_MAX_CONNECTIONS" >> /usr/share/postgresql/postgresql.conf.sample && \
+    echo "shared_buffers = $POSTGRES_SHARED_BUFFERS" >> /usr/share/postgresql/postgresql.conf.sample
+
+EXPOSE 5432
+
+VOLUME ["/var/lib/postgresql/data"]

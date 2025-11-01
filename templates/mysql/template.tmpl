@@ -1,0 +1,12 @@
+FROM mysql:{{ .version }}
+
+ENV MYSQL_CHARACTER_SET_SERVER={{ .charset }}
+ENV MYSQL_ROOT_PASSWORD={{ .root_password }}
+
+RUN echo "[mysqld]" > /etc/mysql/conf.d/custom.cnf && \
+    echo "character-set-server={{ .charset }}" >> /etc/mysql/conf.d/custom.cnf && \
+    echo "max_connections={{ .max_connections }}" >> /etc/mysql/conf.d/custom.cnf
+
+EXPOSE 3306
+
+VOLUME ["/var/lib/mysql"]
