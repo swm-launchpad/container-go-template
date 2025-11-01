@@ -1,0 +1,48 @@
+FROM node:{{ .node_version }}-alpine
+
+WORKDIR /app
+
+{{ if eq .package_manager "npm" }}
+COPY package*.json ./
+{{ else if eq .package_manager "yarn" }}
+COPY package.json yarn.lock ./
+{{ else }}
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm
+{{ end }}
+
+{{ if eq .node_env "production" }}
+{{ if eq .package_manager "npm" }}
+RUN npm ci --only=production
+{{ else if eq .package_manager "yarn" }}
+RUN yarn install --production --frozen-lockfile
+{{ else }}
+RUN pnpm install --prod --frozen-lockfile
+{{ end }}
+{{ else }}
+{{ if eq .package_manager "npm" }}
+RUN npm ci
+{{ else if eq .package_manager "yarn" }}
+RUN yarn install --frozen-lockfile
+{{ else }}
+RUN pnpm install --frozen-lockfile
+{{ end }}
+{{ end }}
+
+{{ if eq .process_manager "pm2" }}
+RUN npm install -g pm2
+{{ else if eq .process_manager "nodemon" }}
+RUN npm install -g nodemon
+{{ end }}
+
+COPY . .
+
+EXPOSE {{ .app_port }}
+
+{{ if eq .process_manager "pm2" }}
+CMD ["pm2-runtime", "start", "{{ .entry_file }}", "--name", "express-app"]
+{{ else if eq .process_manager "nodemon" }}
+CMD ["nodemon", "{{ .entry_file }}"]
+{{ else }}
+CMD ["node", "{{ .entry_file }}"]
+{{ end }}
