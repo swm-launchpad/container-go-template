@@ -1,0 +1,174 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  GO_VERSION: '1.25.3'
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy-to-production:
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          cache-dependency-path: scripts/go.sum
+
+      - name: Detect changed templates
+        id: changed
+        run: |
+          BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
+
+          # 첫 커밋인 경우 모든 템플릿 포함
+          if [ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]; then
+            echo "all_templates=true" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ First commit - including all templates"
+            exit 0
+          fi
+
+          # 변경된 템플릿 감지
+          CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
+            grep '^templates/' | \
+            cut -d'/' -f1,2 | \
+            sort -u)
+
+          if [ -z "$CHANGED_DIRS" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "⚠️  No template changes detected - skipping deployment"
+            exit 0
+          fi
+
+          CHANGED_JSON=$(echo "$CHANGED_DIRS" | jq -R -s -c 'split("\n") | map(select(length > 0)) | map("../" + .)')
+
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "changed_templates=$CHANGED_JSON" >> $GITHUB_OUTPUT
+          echo "✅ Changed templates detected:"
+          echo "$CHANGED_DIRS"
+
+      - name: Generate migration SQL
+        id: generate
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          VERSION=$(date +%Y%m%d%H%M%S)
+          MIGRATION_FILE="migration_${VERSION}.sql"
+
+          cd scripts
+
+          if [ "${{ steps.changed.outputs.all_templates }}" == "true" ]; then
+            go run generate-migration.go \
+              --all \
+              --output /tmp/$MIGRATION_FILE \
+              --version $VERSION \
+              --commit-sha ${{ github.sha }}
+          else
+            go run generate-migration.go \
+              --changed '${{ steps.changed.outputs.changed_templates }}' \
+              --output /tmp/$MIGRATION_FILE \
+              --version $VERSION \
+              --commit-sha ${{ github.sha }}
+          fi
+
+          echo "migration_file=$MIGRATION_FILE" >> $GITHUB_OUTPUT
+          echo "✅ Migration SQL generated: $MIGRATION_FILE"
+
+          echo "### Generated Migration SQL" >> $GITHUB_STEP_SUMMARY
+          echo '```sql' >> $GITHUB_STEP_SUMMARY
+          head -50 /tmp/$MIGRATION_FILE >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Setup SSH
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          ssh-keyscan -H launchpad.kr >> ~/.ssh/known_hosts
+
+      - name: Upload migration to server
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          MIGRATION_FILE="${{ steps.generate.outputs.migration_file }}"
+
+          # 서버에 migration 디렉토리 생성
+          ssh ubuntu@launchpad.kr "mkdir -p ~/container-templates/migrations"
+
+          # 마이그레이션 파일 업로드
+          scp /tmp/$MIGRATION_FILE ubuntu@launchpad.kr:~/container-templates/migrations/
+
+          echo "✅ Migration file uploaded to server"
+
+      - name: Apply migration to MySQL
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          MIGRATION_FILE="${{ steps.generate.outputs.migration_file }}"
+
+          # MySQL에 마이그레이션 적용
+          ssh ubuntu@launchpad.kr "\
+            source ~/mysql/.env && \
+            docker exec -i mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" \$MYSQL_DATABASE < ~/container-templates/migrations/$MIGRATION_FILE"
+
+          echo "✅ Migration applied to MySQL successfully"
+
+      - name: Verify migration
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          # deprecated 템플릿 수 확인
+          DEPRECATED_COUNT=$(ssh ubuntu@launchpad.kr "\
+            source ~/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status='deprecated';\"")
+
+          # active 템플릿 수 확인
+          ACTIVE_COUNT=$(ssh ubuntu@launchpad.kr "\
+            source ~/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status='active';\"")
+
+          # 최근 추가된 템플릿 확인
+          RECENT_TEMPLATES=$(ssh ubuntu@launchpad.kr "\
+            source ~/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" -N \$MYSQL_DATABASE -e \"SELECT template_id, name, status FROM TEMPLATES ORDER BY template_id DESC LIMIT 5;\"")
+
+          echo "### Migration Verification" >> $GITHUB_STEP_SUMMARY
+          echo "- Deprecated templates: $DEPRECATED_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "- Active templates: $ACTIVE_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Recent templates:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$RECENT_TEMPLATES" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          echo "✅ Migration verification complete"
+
+      - name: Deployment summary
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          echo "### 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Migration Details:**" >> $GITHUB_STEP_SUMMARY
+          echo "- File: \`${{ steps.generate.outputs.migration_file }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Applied to: production MySQL (web_console database)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ Successfully deployed" >> $GITHUB_STEP_SUMMARY
+
+      - name: No changes to deploy
+        if: steps.changed.outputs.has_changes != 'true'
+        run: |
+          echo "### No Deployment Needed" >> $GITHUB_STEP_SUMMARY
+          echo "No template changes detected in this push" >> $GITHUB_STEP_SUMMARY
