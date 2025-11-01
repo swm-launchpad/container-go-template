@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+env:
+  GO_VERSION: '1.25.3'
+
+jobs:
+  validate-templates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 전체 히스토리 필요 (diff를 위해)
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          cache-dependency-path: scripts/go.sum
+
+      - name: Download dependencies
+        run: |
+          cd scripts
+          go mod download
+
+      - name: Detect changed templates
+        id: changed
+        run: |
+          # 이벤트 타입에 따라 BASE_SHA/HEAD_SHA 설정
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          elif [ "${{ github.event_name }}" == "push" ] || [ "${{ github.event_name }}" == "workflow_call" ]; then
+            BASE_SHA="${{ github.event.before }}"
+            HEAD_SHA="${{ github.sha }}"
+          else
+            echo "❌ Unsupported event type: ${{ github.event_name }}"
+            exit 1
+          fi
+
+          CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
+            grep '^templates/' | \
+            cut -d'/' -f1,2 | \
+            sort -u)
+
+          if [ -z "$CHANGED_DIRS" ]; then
+            echo "changed_templates=[]" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            CHANGED_JSON=$(echo "$CHANGED_DIRS" | jq -R -s -c 'split("\n") | map(select(length > 0)) | map("../" + .)')
+            echo "changed_templates=$CHANGED_JSON" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+
+            echo "### Changed Templates" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "$CHANGED_DIRS" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Validate changed templates
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          cd scripts
+          go run generate-migration.go \
+            --changed '${{ steps.changed.outputs.changed_templates }}' \
+            --validate-only
+
+      - name: Test migration generation
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          cd scripts
+          go run generate-migration.go \
+            --changed '${{ steps.changed.outputs.changed_templates }}' \
+            --output /tmp/test-migration.sql \
+            --version test-${{ github.event.pull_request.number }}
+
+          echo "### Generated Migration Preview" >> $GITHUB_STEP_SUMMARY
+          echo '```sql' >> $GITHUB_STEP_SUMMARY
+          head -100 /tmp/test-migration.sql >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Count lines
+          LINES=$(wc -l < /tmp/test-migration.sql)
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Total lines:** $LINES" >> $GITHUB_STEP_SUMMARY
+
+      - name: No changes detected
+        if: steps.changed.outputs.has_changes != 'true'
+        run: |
+          echo "✅ No template changes detected - validation skipped"
+          echo "### No Template Changes" >> $GITHUB_STEP_SUMMARY
+          echo "No templates were modified in this PR" >> $GITHUB_STEP_SUMMARY
+
+      - name: Validation summary
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          echo "✅ All validations passed!"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Validation Complete" >> $GITHUB_STEP_SUMMARY
+          echo "All changed templates are valid and migration SQL generated successfully" >> $GITHUB_STEP_SUMMARY
