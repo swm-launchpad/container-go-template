@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "frontend"
+  ],
+  "description": "Vue.js 템플릿",
+  "display_order": 0,
+  "icon_name": "vuejs",
+  "name": "Vue.js",
+  "requires_git": true,
+  "version": "1.0"
+}
