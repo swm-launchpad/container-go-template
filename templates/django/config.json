@@ -1,0 +1,64 @@
+{
+  "default_env": [
+    {
+      "key": "DJANGO_SETTINGS_MODULE",
+      "value": "config.settings"
+    },
+    {
+      "key": "PYTHONUNBUFFERED",
+      "value": "1"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 8000,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "3.11",
+      "label": "Python 버전",
+      "name": "python_version",
+      "options": [
+        "3.9",
+        "3.10",
+        "3.11",
+        "3.12"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "pip",
+      "label": "의존성 매니저",
+      "name": "dependency_manager",
+      "options": [
+        "pip",
+        "poetry",
+        "pipenv"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "8000",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number"
+    },
+    {
+      "default": "config.wsgi:application",
+      "label": "WSGI 모듈",
+      "name": "wsgi_module",
+      "options": [],
+      "type": "text"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "Django server port",
+      "internal_port": 8000,
+      "network_type": "http"
+    }
+  ]
+}

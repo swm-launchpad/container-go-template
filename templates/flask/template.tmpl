@@ -1,0 +1,28 @@
+FROM python:{{ .python_version }}-slim
+
+WORKDIR /app
+
+{{ if eq .dependency_manager "pip" }}
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
+{{ else if eq .dependency_manager "poetry" }}
+RUN pip install --no-cache-dir poetry
+COPY pyproject.toml poetry.lock* ./
+RUN poetry config virtualenvs.create false && poetry install --no-dev --no-root && pip install --no-cache-dir gunicorn
+{{ else }}
+RUN pip install --no-cache-dir pipenv
+COPY Pipfile Pipfile.lock* ./
+RUN pipenv install --system --deploy && pip install --no-cache-dir gunicorn
+{{ end }}
+
+COPY . .
+
+RUN addgroup --system --gid 1001 app && \
+    adduser --system --uid 1001 --gid 1001 app && \
+    chown -R app:app /app
+
+USER app
+
+EXPOSE {{ .app_port }}
+
+CMD ["gunicorn", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "4", "{{ .app_module }}"]

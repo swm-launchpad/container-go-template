@@ -1,0 +1,63 @@
+{
+  "default_env": [
+    {
+      "key": "SPRING_PROFILES_ACTIVE",
+      "value": "prod"
+    },
+    {
+      "key": "SERVER_PORT",
+      "value": "8080"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 8080,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "17",
+      "label": "Java 버전",
+      "name": "java_version",
+      "options": [
+        "17",
+        "21"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "gradle",
+      "label": "빌드 도구",
+      "name": "build_tool",
+      "options": [
+        "maven",
+        "gradle"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "3.9",
+      "label": "Maven 버전",
+      "name": "maven_version",
+      "options": [
+        "3.9"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "8080",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "Spring Boot server port",
+      "internal_port": 8080,
+      "network_type": "http"
+    }
+  ]
+}

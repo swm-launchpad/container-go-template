@@ -1,0 +1,32 @@
+FROM gradle:{{ .gradle_version }}-jdk{{ .java_version }}-alpine AS build
+
+WORKDIR /app
+
+COPY build.gradle.kts settings.gradle.kts ./
+COPY gradle ./gradle
+
+RUN gradle dependencies --no-daemon
+
+COPY src ./src
+
+RUN gradle clean build -x test --no-daemon
+
+RUN cp build/libs/*.jar app.jar
+
+FROM eclipse-temurin:{{ .java_version }}-jre-alpine
+
+WORKDIR /app
+
+RUN addgroup -S spring && adduser -S spring -G spring
+
+COPY --from=build /app/app.jar .
+
+RUN chown spring:spring app.jar
+
+USER spring
+
+EXPOSE {{ .app_port }}
+
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
