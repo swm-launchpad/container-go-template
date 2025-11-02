@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "Laravel PHP 웹 프레임워크",
+  "display_order": 15,
+  "icon_name": "laravel",
+  "name": "Laravel",
+  "requires_git": true,
+  "version": "1.0"
+}

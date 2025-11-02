@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "frontend"
+  ],
+  "description": "Angular 프론트엔드 프레임워크",
+  "display_order": 7,
+  "icon_name": "angular",
+  "name": "Angular",
+  "requires_git": true,
+  "version": "1.0"
+}

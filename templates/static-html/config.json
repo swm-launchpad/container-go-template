@@ -1,0 +1,28 @@
+{
+  "default_env": null,
+  "default_ports": [
+    {
+      "internal_port": 80,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "1.26",
+      "label": "Nginx 버전",
+      "name": "nginx_version",
+      "options": [
+        "1.25",
+        "1.26"
+      ],
+      "type": "select"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "HTTP port",
+      "internal_port": 80,
+      "network_type": "http"
+    }
+  ]
+}

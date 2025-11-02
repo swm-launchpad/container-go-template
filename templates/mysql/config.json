@@ -1,0 +1,63 @@
+{
+  "default_env": [
+    {
+      "key": "MYSQL_ROOT_PASSWORD",
+      "value": "changeme"
+    },
+    {
+      "key": "MYSQL_CHARACTER_SET_SERVER",
+      "value": "utf8mb4"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 3306,
+      "network_type": "tcp"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "8.0",
+      "label": "MySQL 버전",
+      "name": "version",
+      "options": [
+        "8.0",
+        "8.4",
+        "9.0"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "utf8mb4",
+      "label": "문자 인코딩",
+      "name": "charset",
+      "options": [
+        "utf8mb4",
+        "utf8",
+        "latin1"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "changeme",
+      "label": "Root 비밀번호",
+      "name": "root_password",
+      "options": [],
+      "type": "password"
+    },
+    {
+      "default": "151",
+      "label": "최대 연결 수",
+      "name": "max_connections",
+      "options": [],
+      "type": "number"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "MySQL port",
+      "internal_port": 3306,
+      "network_type": "tcp"
+    }
+  ]
+}

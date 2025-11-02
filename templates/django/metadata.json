@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "Python Django 풀스택 웹 프레임워크",
+  "display_order": 14,
+  "icon_name": "django",
+  "name": "Django",
+  "requires_git": true,
+  "version": "1.0"
+}

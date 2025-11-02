@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "Go Gin 템플릿",
+  "display_order": 0,
+  "icon_name": "go gin",
+  "name": "Go Gin",
+  "requires_git": true,
+  "version": "1.0"
+}

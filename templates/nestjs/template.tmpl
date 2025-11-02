@@ -1,0 +1,45 @@
+FROM node:{{ .node_version }}-alpine AS builder
+
+WORKDIR /app
+
+{{ if eq .package_manager "npm" }}
+COPY package*.json ./
+RUN npm ci
+{{ else if eq .package_manager "yarn" }}
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+{{ else }}
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
+{{ end }}
+
+COPY . .
+
+{{ if eq .package_manager "npm" }}
+RUN npm run build
+{{ else if eq .package_manager "yarn" }}
+RUN yarn build
+{{ else }}
+RUN pnpm build
+{{ end }}
+
+FROM node:{{ .node_version }}-alpine
+
+WORKDIR /app
+
+{{ if eq .package_manager "npm" }}
+COPY package*.json ./
+RUN npm ci --only=production
+{{ else if eq .package_manager "yarn" }}
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile
+{{ else }}
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
+{{ end }}
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE {{ .app_port }}
+
+CMD ["node", "dist/main"]

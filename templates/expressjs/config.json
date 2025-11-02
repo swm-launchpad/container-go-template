@@ -1,0 +1,84 @@
+{
+  "default_env": [
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "key": "PORT",
+      "value": "3000"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 3000,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "20",
+      "label": "Node.js 버전",
+      "name": "node_version",
+      "options": [
+        "18",
+        "20",
+        "22"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "npm",
+      "label": "패키지 매니저",
+      "name": "package_manager",
+      "options": [
+        "npm",
+        "yarn",
+        "pnpm"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "production",
+      "label": "Node 환경",
+      "name": "node_env",
+      "options": [
+        "development",
+        "production"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "none",
+      "label": "프로세스 매니저",
+      "name": "process_manager",
+      "options": [
+        "none",
+        "pm2",
+        "nodemon"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "3000",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number"
+    },
+    {
+      "default": "index.js",
+      "label": "진입 파일",
+      "name": "entry_file",
+      "options": [],
+      "type": "text"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "Express.js HTTP port",
+      "internal_port": 3000,
+      "network_type": "http"
+    }
+  ]
+}

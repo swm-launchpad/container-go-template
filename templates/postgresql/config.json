@@ -1,0 +1,57 @@
+{
+  "default_env": [
+    {
+      "key": "POSTGRES_PASSWORD",
+      "value": "changeme"
+    },
+    {
+      "key": "POSTGRES_MAX_CONNECTIONS",
+      "value": "100"
+    },
+    {
+      "key": "POSTGRES_SHARED_BUFFERS",
+      "value": "128MB"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 5432,
+      "network_type": "tcp"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "16",
+      "label": "PostgreSQL 버전",
+      "name": "version",
+      "options": [
+        "14",
+        "15",
+        "16",
+        "17"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "100",
+      "label": "최대 연결 수",
+      "name": "max_connections",
+      "options": [],
+      "type": "number"
+    },
+    {
+      "default": "128MB",
+      "label": "공유 버퍼",
+      "name": "shared_buffers",
+      "options": [],
+      "type": "text"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "PostgreSQL port",
+      "internal_port": 5432,
+      "network_type": "tcp"
+    }
+  ]
+}

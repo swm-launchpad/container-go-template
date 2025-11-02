@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "Rust 고성능 웹 애플리케이션",
+  "display_order": 17,
+  "icon_name": "rust",
+  "name": "Rust",
+  "requires_git": true,
+  "version": "1.0"
+}

@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "NestJS 템플릿",
+  "display_order": 0,
+  "icon_name": "nestjs",
+  "name": "NestJS",
+  "requires_git": true,
+  "version": "1.0"
+}

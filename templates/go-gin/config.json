@@ -1,0 +1,46 @@
+{
+  "default_env": [
+    {
+      "key": "GIN_MODE",
+      "value": "release"
+    },
+    {
+      "key": "PORT",
+      "value": "8080"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 8080,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "1.23",
+      "label": "Go 버전",
+      "name": "go_version",
+      "options": [
+        "1.22",
+        "1.23",
+        "1.24",
+        "1.25"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "8080",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "Go Gin HTTP port",
+      "internal_port": 8080,
+      "network_type": "http"
+    }
+  ]
+}

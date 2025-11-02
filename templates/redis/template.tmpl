@@ -1,0 +1,7 @@
+FROM redis:{{ .redis_version }}-alpine
+
+EXPOSE {{ .redis_port }}
+
+VOLUME ["/data"]
+
+CMD ["redis-server", "--port", "{{ .redis_port }}", "--appendonly", "yes", "--requirepass", "{{ .redis_password }}"]

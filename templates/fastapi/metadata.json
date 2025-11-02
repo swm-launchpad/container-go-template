@@ -1,0 +1,11 @@
+{
+  "categories": [
+    "backend"
+  ],
+  "description": "Python FastAPI 비동기 웹 프레임워크",
+  "display_order": 12,
+  "icon_name": "fastapi",
+  "name": "FastAPI",
+  "requires_git": true,
+  "version": "1.0"
+}

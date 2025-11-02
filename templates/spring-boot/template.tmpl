@@ -1,0 +1,40 @@
+FROM maven:{{ .maven_version }}-eclipse-temurin-{{ .java_version }} AS build
+
+WORKDIR /app
+
+{{ if eq .build_tool "maven" }}
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests
+RUN cp target/*.jar app.jar
+{{ else }}
+COPY build.gradle* settings.gradle* gradlew* ./
+COPY gradle ./gradle 2>/dev/null || true
+RUN if [ -f gradlew ]; then chmod +x gradlew && ./gradlew dependencies --no-daemon; else gradle dependencies --no-daemon; fi
+COPY src ./src
+RUN if [ -f gradlew ]; then ./gradlew clean build -x test --no-daemon; else gradle clean build -x test --no-daemon; fi
+RUN cp build/libs/*.jar app.jar
+{{ end }}
+
+FROM eclipse-temurin:{{ .java_version }}-jre-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache wget
+
+RUN addgroup -S spring && adduser -S spring -G spring
+
+COPY --from=build /app/app.jar .
+RUN chown spring:spring app.jar
+
+USER spring
+
+EXPOSE {{ .app_port }}
+
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:{{ .app_port }}/actuator/health || exit 1
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

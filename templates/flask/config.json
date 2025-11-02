@@ -1,0 +1,64 @@
+{
+  "default_env": [
+    {
+      "key": "FLASK_APP",
+      "value": "app.py"
+    },
+    {
+      "key": "FLASK_ENV",
+      "value": "production"
+    }
+  ],
+  "default_ports": [
+    {
+      "internal_port": 5000,
+      "network_type": "http"
+    }
+  ],
+  "template_options": [
+    {
+      "default": "3.11",
+      "label": "Python 버전",
+      "name": "python_version",
+      "options": [
+        "3.9",
+        "3.10",
+        "3.11",
+        "3.12"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "pip",
+      "label": "의존성 매니저",
+      "name": "dependency_manager",
+      "options": [
+        "pip",
+        "poetry",
+        "pipenv"
+      ],
+      "type": "select"
+    },
+    {
+      "default": "5000",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number"
+    },
+    {
+      "default": "app:app",
+      "label": "애플리케이션 모듈",
+      "name": "app_module",
+      "options": [],
+      "type": "text"
+    }
+  ],
+  "template_ports": [
+    {
+      "description": "Flask server port",
+      "internal_port": 5000,
+      "network_type": "http"
+    }
+  ]
+}
