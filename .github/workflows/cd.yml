@@ -119,10 +119,10 @@ jobs:
         run: |
           MIGRATION_FILE="${{ steps.generate.outputs.migration_file }}"
 
-          # MySQL에 마이그레이션 적용
+          # MySQL에 마이그레이션 적용 (UTF-8 인코딩 사용)
           ssh ubuntu@launchpad.kr "\
-            source ~/mysql/.env && \
-            docker exec -i mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" \$MYSQL_DATABASE < ~/container-templates/migrations/$MIGRATION_FILE"
+            sudo bash -c 'source /home/ubuntu/mysql/.env && \
+            docker exec -i mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 \$MYSQL_DATABASE < /home/ubuntu/container-templates/migrations/$MIGRATION_FILE'"
 
           echo "✅ Migration applied to MySQL successfully"
 
@@ -131,18 +131,18 @@ jobs:
         run: |
           # deprecated 템플릿 수 확인
           DEPRECATED_COUNT=$(ssh ubuntu@launchpad.kr "\
-            source ~/mysql/.env && \
-            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status='deprecated';\"")
+            sudo bash -c 'source /home/ubuntu/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status=\\\"deprecated\\\";\"'")
 
           # active 템플릿 수 확인
           ACTIVE_COUNT=$(ssh ubuntu@launchpad.kr "\
-            source ~/mysql/.env && \
-            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status='active';\"")
+            sudo bash -c 'source /home/ubuntu/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status=\\\"active\\\";\"'")
 
           # 최근 추가된 템플릿 확인
           RECENT_TEMPLATES=$(ssh ubuntu@launchpad.kr "\
-            source ~/mysql/.env && \
-            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" -N \$MYSQL_DATABASE -e \"SELECT template_id, name, status FROM TEMPLATES ORDER BY template_id DESC LIMIT 5;\"")
+            sudo bash -c 'source /home/ubuntu/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT template_id, name, status FROM TEMPLATES ORDER BY template_id DESC LIMIT 5;\"'")
 
           echo "### Migration Verification" >> $GITHUB_STEP_SUMMARY
           echo "- Deprecated templates: $DEPRECATED_COUNT" >> $GITHUB_STEP_SUMMARY
