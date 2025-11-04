@@ -178,6 +178,19 @@ RUN yarn install
 4. MySQL에 직접 마이그레이션 적용
 5. 검증 (deprecated/active 상태 확인)
 
+### CD (Manual Trigger - DB 초기화 후)
+DB 초기화 후 전체 템플릿을 수동으로 배포할 수 있습니다:
+
+1. GitHub Actions → CD 워크플로우 이동
+2. "Run workflow" 버튼 클릭
+3. "Force deploy all templates" 체크박스 선택
+4. Run 실행
+5. 23개 전체 템플릿이 운영 DB에 삽입됨
+
+**사용 시나리오:**
+- 운영 환경 DB 초기화 후 전체 템플릿 재배포
+- 새로운 환경 구축 시 전체 템플릿 일괄 삽입
+
 ## 🛡️ 안전 장치
 
 - **변경된 템플릿만 업데이트**: 불필요한 template_id 증가 방지

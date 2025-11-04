@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      force_all_templates:
+        description: 'Force deploy all templates (use after DB reset)'
+        required: false
+        type: boolean
+        default: false
 
 env:
   GO_VERSION: '1.25.3'
@@ -32,6 +38,14 @@ jobs:
       - name: Detect changed templates
         id: changed
         run: |
+          # 수동 트리거에서 force_all_templates=true인 경우 모든 템플릿 포함
+          if [ "${{ github.event.inputs.force_all_templates }}" == "true" ]; then
+            echo "all_templates=true" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Force deploy all templates (manual trigger)"
+            exit 0
+          fi
+
           BASE_SHA="${{ github.event.before }}"
           HEAD_SHA="${{ github.sha }}"
 
