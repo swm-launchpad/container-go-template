@@ -95,7 +95,6 @@ jobs:
 
       - name: Docker build validation (changed templates)
         if: steps.changed.outputs.has_changes == 'true'
-        continue-on-error: true
         run: |
           cd scripts
 
