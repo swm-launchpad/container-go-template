@@ -49,6 +49,11 @@ jobs:
           BASE_SHA="${{ github.event.before }}"
           HEAD_SHA="${{ github.sha }}"
 
+          # workflow_dispatch (push 아님) 시 github.event.before는 비어있음
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" == "null" ]; then
+            BASE_SHA="HEAD^"
+          fi
+
           # 첫 커밋인 경우 모든 템플릿 포함
           if [ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]; then
             echo "all_templates=true" >> $GITHUB_OUTPUT
