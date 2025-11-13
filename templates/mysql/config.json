@@ -89,6 +89,15 @@
       "type": "text",
       "category": "advanced",
       "description": "InnoDB 테이블과 인덱스를 캐싱하는 메모리 크기. 전체 메모리의 50-70% 권장."
+    },
+    {
+      "default": "64M",
+      "label": "최대 패킷 크기",
+      "name": "max_allowed_packet",
+      "options": [],
+      "type": "text",
+      "category": "advanced",
+      "description": "클라이언트와 서버 간 전송 가능한 최대 패킷 크기. 큰 데이터 처리 시 증가 필요."
     }
   ],
   "template_ports": [

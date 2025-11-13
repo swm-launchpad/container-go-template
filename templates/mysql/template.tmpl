@@ -13,7 +13,8 @@ ENV MYSQL_ALLOW_EMPTY_PASSWORD=yes
 RUN echo "[mysqld]" > /etc/mysql/conf.d/custom.cnf && \
     echo "character-set-server={{ .charset }}" >> /etc/mysql/conf.d/custom.cnf && \
     echo "max_connections={{ .max_connections }}" >> /etc/mysql/conf.d/custom.cnf{{ if .innodb_buffer_pool_size }} && \
-    echo "innodb_buffer_pool_size={{ .innodb_buffer_pool_size }}" >> /etc/mysql/conf.d/custom.cnf{{ end }}
+    echo "innodb_buffer_pool_size={{ .innodb_buffer_pool_size }}" >> /etc/mysql/conf.d/custom.cnf{{ end }}{{ if .max_allowed_packet }} && \
+    echo "max_allowed_packet={{ .max_allowed_packet }}" >> /etc/mysql/conf.d/custom.cnf{{ end }}
 
 {{ if and .database_name .user_username .user_password -}}
 RUN echo "CREATE USER IF NOT EXISTS '{{ .user_username }}'@'%' IDENTIFIED BY '{{ .user_password }}';" > /docker-entrypoint-initdb.d/01-create-user.sql && \
