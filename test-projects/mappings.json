@@ -230,17 +230,51 @@
           "gradle_version": "8.5",
           "app_port": "8080"
         }
+      },
+      {
+        "name": "maven-java21",
+        "path": "test-projects/backend/spring-boot-maven-java21",
+        "options": {
+          "java_version": "21",
+          "build_tool": "maven",
+          "maven_version": "3.9",
+          "app_port": "8080"
+        }
+      },
+      {
+        "name": "gradle-java21",
+        "path": "test-projects/backend/spring-boot-gradle-java21",
+        "options": {
+          "java_version": "21",
+          "build_tool": "gradle",
+          "gradle_version": "8.5",
+          "app_port": "8080"
+        }
       }
     ]
   },
   "kotlin-spring-boot": {
     "template": "templates/kotlin-spring-boot",
-    "test_project": "test-projects/backend/kotlin-spring-boot",
-    "default_options": {
-      "java_version": "17",
-      "gradle_version": "8.5",
-      "app_port": "8080"
-    }
+    "test_projects": [
+      {
+        "name": "java17",
+        "path": "test-projects/backend/kotlin-spring-boot-java17",
+        "options": {
+          "java_version": "17",
+          "gradle_version": "8.5",
+          "app_port": "8080"
+        }
+      },
+      {
+        "name": "java21",
+        "path": "test-projects/backend/kotlin-spring-boot-java21",
+        "options": {
+          "java_version": "21",
+          "gradle_version": "8.5",
+          "app_port": "8080"
+        }
+      }
+    ]
   },
   "fastapi": {
     "template": "templates/fastapi",
