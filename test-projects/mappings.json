@@ -75,15 +75,44 @@
   },
   "expressjs": {
     "template": "templates/expressjs",
-    "test_project": "test-projects/backend/expressjs",
-    "default_options": {
-      "node_version": "20",
-      "package_manager": "npm",
-      "node_env": "production",
-      "process_manager": "none",
-      "app_port": "3000",
-      "entry_file": "index.js"
-    }
+    "test_projects": [
+      {
+        "name": "npm-prod-pm2",
+        "path": "test-projects/backend/expressjs-npm-prod-pm2",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "node_env": "production",
+          "process_manager": "pm2",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "yarn-dev-nodemon",
+        "path": "test-projects/backend/expressjs-yarn-dev-nodemon",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "node_env": "development",
+          "process_manager": "nodemon",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "npm-prod-none",
+        "path": "test-projects/backend/expressjs-npm-prod-none",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "node_env": "production",
+          "process_manager": "none",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      }
+    ]
   },
   "nestjs": {
     "template": "templates/nestjs",
