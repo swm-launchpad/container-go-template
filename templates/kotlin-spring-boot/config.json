@@ -1,10 +1,5 @@
 {
-  "default_env": [
-    {
-      "key": "SPRING_PROFILES_ACTIVE",
-      "value": "prod"
-    }
-  ],
+  "default_env": [],
   "default_ports": [
     {
       "internal_port": 8080,
