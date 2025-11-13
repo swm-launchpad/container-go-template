@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static HTML Test Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .counter-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .count {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #ee5555;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            padding: 5px 10px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .status.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.ready {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .timestamp {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .items-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .items-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Static HTML Test Application</h1>
+
+        <!-- Counter Section -->
+        <div class="section">
+            <h2>Counter</h2>
+            <div class="counter-display">
+                <span class="count" id="counter">0</span>
+            </div>
+            <div class="button-group">
+                <button onclick="increment()">Increment</button>
+                <button onclick="decrement()">Decrement</button>
+                <button onclick="reset()">Reset</button>
+            </div>
+            <div class="status ready" id="status">
+                Status: Ready
+            </div>
+        </div>
+
+        <!-- Timestamp Section -->
+        <div class="section">
+            <h2>Last Action</h2>
+            <p class="timestamp" id="timestamp">No actions yet</p>
+        </div>
+
+        <!-- Items List Section -->
+        <div class="section">
+            <h2>Items List</h2>
+            <div class="input-group">
+                <input
+                    type="text"
+                    id="newItem"
+                    placeholder="Enter item name"
+                    onkeypress="handleKeyPress(event)"
+                />
+                <button onclick="addItem()">Add Item</button>
+            </div>
+            <ul class="items-list" id="itemsList"></ul>
+            <p class="empty-message" id="emptyMessage">No items yet. Add some!</p>
+        </div>
+    </div>
+
+    <script>
+        let counter = 0;
+        let items = [];
+
+        function updateTimestamp() {
+            const timestamp = new Date().toLocaleString();
+            document.getElementById('timestamp').textContent = timestamp;
+        }
+
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            statusEl.className = 'status';
+
+            if (counter > 0) {
+                statusEl.textContent = 'Status: Positive';
+                statusEl.classList.add('positive');
+            } else if (counter < 0) {
+                statusEl.textContent = 'Status: Negative';
+                statusEl.classList.add('negative');
+            } else {
+                statusEl.textContent = 'Status: Ready';
+                statusEl.classList.add('ready');
+            }
+        }
+
+        function updateCounter() {
+            document.getElementById('counter').textContent = counter;
+            updateStatus();
+        }
+
+        function increment() {
+            counter++;
+            updateCounter();
+            updateTimestamp();
+        }
+
+        function decrement() {
+            counter--;
+            updateCounter();
+            updateTimestamp();
+        }
+
+        function reset() {
+            counter = 0;
+            updateCounter();
+            updateTimestamp();
+        }
+
+        function renderItems() {
+            const itemsList = document.getElementById('itemsList');
+            const emptyMessage = document.getElementById('emptyMessage');
+
+            itemsList.innerHTML = '';
+
+            if (items.length === 0) {
+                emptyMessage.style.display = 'block';
+            } else {
+                emptyMessage.style.display = 'none';
+                items.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        ${item}
+                        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                    `;
+                    itemsList.appendChild(li);
+                });
+            }
+        }
+
+        function addItem() {
+            const input = document.getElementById('newItem');
+            const value = input.value.trim();
+
+            if (value) {
+                items.push(value);
+                input.value = '';
+                renderItems();
+                updateTimestamp();
+            }
+        }
+
+        function removeItem(index) {
+            items.splice(index, 1);
+            renderItems();
+            updateTimestamp();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                addItem();
+            }
+        }
+
+        // Initialize empty message
+        renderItems();
+    </script>
+</body>
+</html>
