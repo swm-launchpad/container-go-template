@@ -70,6 +70,13 @@ jobs:
             TEMPLATE_CHANGES=$(cat test-projects/mappings.json | jq -r 'keys[]' | sort)
           fi
 
+          # 4. test-projects/mappings.json 변경 → 모든 템플릿 검증
+          MAPPINGS_CHANGED=$(echo "$CHANGED_FILES" | grep '^test-projects/mappings.json$' || true)
+          if [ -n "$MAPPINGS_CHANGED" ]; then
+            echo "Mappings file changed - validating all templates"
+            TEMPLATE_CHANGES=$(cat test-projects/mappings.json | jq -r 'keys[]' | sort)
+          fi
+
           if [ -z "$TEMPLATE_CHANGES" ]; then
             echo "changed_templates=[]" >> $GITHUB_OUTPUT
             echo "has_changes=false" >> $GITHUB_OUTPUT
