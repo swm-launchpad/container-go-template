@@ -1,5 +1,10 @@
 FROM postgres:{{ .version }}
 
+{{ if .postgres_password -}}
+ENV POSTGRES_PASSWORD={{ .postgres_password }}
+{{- else -}}
+ENV POSTGRES_HOST_AUTH_METHOD=trust
+{{- end }}
 ENV POSTGRES_MAX_CONNECTIONS={{ .max_connections }}
 ENV POSTGRES_SHARED_BUFFERS={{ .shared_buffers }}
 

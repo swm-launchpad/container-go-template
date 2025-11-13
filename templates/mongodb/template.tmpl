@@ -1,7 +1,9 @@
 FROM mongo:{{ .mongo_version }}
 
+{{ if and .root_username .root_password -}}
 ENV MONGO_INITDB_ROOT_USERNAME={{ .root_username }}
 ENV MONGO_INITDB_ROOT_PASSWORD={{ .root_password }}
+{{- end }}
 
 EXPOSE {{ .mongo_port }}
 

@@ -4,4 +4,8 @@ EXPOSE {{ .redis_port }}
 
 VOLUME ["/data"]
 
+{{ if .redis_password -}}
 CMD ["redis-server", "--port", "{{ .redis_port }}", "--appendonly", "yes", "--requirepass", "{{ .redis_password }}"]
+{{- else -}}
+CMD ["redis-server", "--port", "{{ .redis_port }}", "--appendonly", "yes"]
+{{- end }}

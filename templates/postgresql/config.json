@@ -2,7 +2,7 @@
   "default_env": [
     {
       "key": "POSTGRES_PASSWORD",
-      "value": "changeme"
+      "value": ""
     },
     {
       "key": "POSTGRES_MAX_CONNECTIONS",
@@ -45,6 +45,13 @@
       "name": "shared_buffers",
       "options": [],
       "type": "text"
+    },
+    {
+      "default": "",
+      "label": "PostgreSQL 비밀번호 (선택사항)",
+      "name": "postgres_password",
+      "options": [],
+      "type": "password"
     }
   ],
   "template_ports": [

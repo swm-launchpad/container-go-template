@@ -355,7 +355,7 @@
     "default_options": {
       "version": "8.0",
       "charset": "utf8mb4",
-      "root_password": "changeme",
+      "root_password": "",
       "max_connections": "151"
     }
   },
@@ -365,7 +365,8 @@
     "default_options": {
       "version": "16",
       "max_connections": "100",
-      "shared_buffers": "128MB"
+      "shared_buffers": "128MB",
+      "postgres_password": ""
     }
   },
   "mongodb": {
@@ -374,8 +375,8 @@
     "default_options": {
       "mongo_version": "7.0",
       "mongo_port": "27017",
-      "root_username": "admin",
-      "root_password": "changeme"
+      "root_username": "",
+      "root_password": ""
     }
   },
   "redis": {

@@ -1,7 +1,11 @@
 FROM mysql:{{ .version }}
 
 ENV MYSQL_CHARACTER_SET_SERVER={{ .charset }}
+{{ if .root_password -}}
 ENV MYSQL_ROOT_PASSWORD={{ .root_password }}
+{{- else -}}
+ENV MYSQL_ALLOW_EMPTY_PASSWORD=yes
+{{- end }}
 
 RUN echo "[mysqld]" > /etc/mysql/conf.d/custom.cnf && \
     echo "character-set-server={{ .charset }}" >> /etc/mysql/conf.d/custom.cnf && \

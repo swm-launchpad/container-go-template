@@ -46,6 +46,15 @@
       "type": "select"
     },
     {
+      "default": "8.5",
+      "label": "Gradle 버전",
+      "name": "gradle_version",
+      "options": [
+        "8.5"
+      ],
+      "type": "select"
+    },
+    {
       "default": "8080",
       "label": "애플리케이션 포트",
       "name": "app_port",

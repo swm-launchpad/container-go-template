@@ -55,11 +55,32 @@ jobs:
           # 1. templates/ 직접 변경
           TEMPLATE_CHANGES=$(echo "$CHANGED_FILES" | grep '^templates/' | cut -d'/' -f2 | sort -u || true)
 
-          # 2. test-projects/ 변경 → 해당 템플릿 매핑
-          TEST_PROJECT_CHANGES=$(echo "$CHANGED_FILES" | grep '^test-projects/' || true)
+          # 2. test-projects/ 변경 → mappings.json에서 실제 템플릿 키 찾기
+          TEST_PROJECT_CHANGES=$(echo "$CHANGED_FILES" | grep '^test-projects/' | grep -v '^test-projects/mappings.json' || true)
           if [ -n "$TEST_PROJECT_CHANGES" ]; then
-            AFFECTED_TEMPLATES=$(echo "$TEST_PROJECT_CHANGES" | \
-              sed -n 's|^test-projects/[^/]*/\([^/]*\)/.*|\1|p' | sort -u)
+            # Create path -> template mapping from mappings.json
+            PATH_TO_TEMPLATE=$(cat test-projects/mappings.json | jq -r '
+              to_entries[] |
+              (
+                if .value.test_projects then
+                  .value.test_projects[] | (.path + " " + .key)
+                elif .value.test_project then
+                  .value.test_project + " " + .key
+                else empty end
+              )
+            ')
+
+            # Find which templates are affected by changed files
+            AFFECTED_TEMPLATES=""
+            while IFS= read -r changed_file; do
+              while IFS=' ' read -r test_path template_key; do
+                if [[ "$changed_file" == "$test_path"* ]]; then
+                  AFFECTED_TEMPLATES=$(echo -e "$AFFECTED_TEMPLATES\n$template_key")
+                fi
+              done <<< "$PATH_TO_TEMPLATE"
+            done <<< "$TEST_PROJECT_CHANGES"
+
+            AFFECTED_TEMPLATES=$(echo "$AFFECTED_TEMPLATES" | grep -v '^$' | sort -u)
             TEMPLATE_CHANGES=$(echo -e "$TEMPLATE_CHANGES\n$AFFECTED_TEMPLATES" | grep -v '^$' | sort -u)
           fi
 

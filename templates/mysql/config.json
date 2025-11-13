@@ -2,7 +2,7 @@
   "default_env": [
     {
       "key": "MYSQL_ROOT_PASSWORD",
-      "value": "changeme"
+      "value": ""
     },
     {
       "key": "MYSQL_CHARACTER_SET_SERVER",
@@ -39,8 +39,8 @@
       "type": "select"
     },
     {
-      "default": "changeme",
-      "label": "Root 비밀번호",
+      "default": "",
+      "label": "Root 비밀번호 (선택사항)",
       "name": "root_password",
       "options": [],
       "type": "password"

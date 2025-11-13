@@ -2,11 +2,11 @@
   "default_env": [
     {
       "key": "MONGO_INITDB_ROOT_USERNAME",
-      "value": "{{ .root_username }}"
+      "value": ""
     },
     {
       "key": "MONGO_INITDB_ROOT_PASSWORD",
-      "value": "{{ .root_password }}"
+      "value": ""
     }
   ],
   "default_ports": [
@@ -34,15 +34,15 @@
       "type": "number"
     },
     {
-      "default": "admin",
-      "label": "Root 사용자명",
+      "default": "",
+      "label": "Root 사용자명 (선택사항)",
       "name": "root_username",
       "options": [],
       "type": "text"
     },
     {
       "default": "",
-      "label": "Root 비밀번호",
+      "label": "Root 비밀번호 (선택사항)",
       "name": "root_password",
       "options": [],
       "type": "password"
