@@ -40,6 +40,15 @@
           "package_manager": "yarn",
           "build_output": "dist"
         }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/frontend/react-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "build_output": "dist"
+        }
       }
     ]
   },
