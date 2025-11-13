@@ -116,12 +116,26 @@
   },
   "nestjs": {
     "template": "templates/nestjs",
-    "test_project": "test-projects/backend/nestjs",
-    "default_options": {
-      "node_version": "20",
-      "package_manager": "npm",
-      "app_port": "3000"
-    }
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/backend/nestjs-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "app_port": "3000"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/backend/nestjs-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "app_port": "3000"
+        }
+      }
+    ]
   },
   "spring-boot": {
     "template": "templates/spring-boot",
