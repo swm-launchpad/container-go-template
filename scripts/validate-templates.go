@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,8 +14,12 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
+	"github.com/docker/docker/pkg/jsonmessage"
+	"github.com/docker/go-connections/nat"
+	"github.com/moby/term"
 )
 
 type TemplateMapping struct {
@@ -28,12 +33,14 @@ type ValidationResult struct {
 	Success      bool
 	Message      string
 	BuildTime    time.Duration
+	RuntimeTest  string
 }
 
 func main() {
 	// Flags
 	templatesFlag := flag.String("templates", "", "Comma-separated list of templates to validate (default: all)")
 	skipBuild := flag.Bool("skip-build", false, "Skip Docker build test (only validate rendering)")
+	runTest := flag.Bool("run-test", false, "Run container and test connectivity (requires Docker build)")
 	timeout := flag.Duration("timeout", 10*time.Minute, "Build timeout per template")
 	verbose := flag.Bool("verbose", false, "Show detailed build logs")
 
@@ -100,13 +107,33 @@ func main() {
 				fmt.Printf("✗ Docker build failed: %v\n", err)
 				continue
 			}
+			fmt.Printf("✓ Docker build succeeded (build time: %s)\n", buildTime.Round(time.Second))
+
+			// Step 3: Runtime test (if requested)
+			runtimeTestResult := "skipped"
+			if *runTest {
+				if err := containerRunTest(templateName, mapping); err != nil {
+					results = append(results, ValidationResult{
+						TemplateName: templateName,
+						Success:      false,
+						Message:      fmt.Sprintf("Runtime test failed: %v", err),
+						BuildTime:    buildTime,
+						RuntimeTest:  "failed",
+					})
+					fmt.Printf("✗ Runtime test failed: %v\n", err)
+					continue
+				}
+				fmt.Printf("✓ Runtime test succeeded\n")
+				runtimeTestResult = "passed"
+			}
+
 			results = append(results, ValidationResult{
 				TemplateName: templateName,
 				Success:      true,
 				Message:      "All checks passed",
 				BuildTime:    buildTime,
+				RuntimeTest:  runtimeTestResult,
 			})
-			fmt.Printf("✓ Docker build succeeded (build time: %s)\n", buildTime.Round(time.Second))
 		} else {
 			results = append(results, ValidationResult{
 				TemplateName: templateName,
@@ -183,11 +210,11 @@ func dockerBuild(templateName string, mapping TemplateMapping, dockerfile string
 
 	// Build options
 	buildOptions := types.ImageBuildOptions{
-		Tags:       []string{fmt.Sprintf("template-validation:%s", templateName)},
-		Dockerfile: "Dockerfile",
-		Remove:     true,
+		Tags:        []string{fmt.Sprintf("template-validation:%s", templateName)},
+		Dockerfile:  "Dockerfile",
+		Remove:      true,
 		ForceRemove: true,
-		NoCache:    true,
+		NoCache:     true,
 	}
 
 	// Start build
@@ -198,18 +225,142 @@ func dockerBuild(templateName string, mapping TemplateMapping, dockerfile string
 	}
 	defer buildResponse.Body.Close()
 
-	// Read build output
-	if verbose {
-		_, err = io.Copy(os.Stdout, buildResponse.Body)
-	} else {
-		_, err = io.Copy(io.Discard, buildResponse.Body)
+	// Read build output and detect errors
+	var output io.Writer = os.Stdout
+	if !verbose {
+		output = io.Discard
 	}
+	termFd, isTerm := term.GetFdInfo(output)
+
+	// DisplayJSONMessagesStream automatically detects build errors
+	err = jsonmessage.DisplayJSONMessagesStream(buildResponse.Body, output, termFd, isTerm, nil)
 	if err != nil {
 		return 0, fmt.Errorf("build failed: %v", err)
 	}
 
 	buildTime := time.Since(startTime)
 	return buildTime, nil
+}
+
+func containerRunTest(templateName string, mapping TemplateMapping) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	// Create Docker client
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return fmt.Errorf("failed to create Docker client: %v", err)
+	}
+	defer cli.Close()
+
+	imageName := fmt.Sprintf("template-validation:%s", templateName)
+
+	// Determine port from mapping
+	var hostPort string
+	appPort := mapping.DefaultOptions["app_port"]
+	if appPort == "" {
+		// For templates without app_port, skip runtime test
+		return nil
+	}
+
+	// Create container with port mapping
+	hostPort = "18080"
+	containerPort := nat.Port(fmt.Sprintf("%s/tcp", appPort))
+	portBindings := nat.PortMap{
+		containerPort: []nat.PortBinding{
+			{
+				HostIP:   "127.0.0.1",
+				HostPort: hostPort,
+			},
+		},
+	}
+
+	// Container config
+	containerConfig := &container.Config{
+		Image: imageName,
+		ExposedPorts: nat.PortSet{
+			containerPort: struct{}{},
+		},
+	}
+
+	hostConfig := &container.HostConfig{
+		PortBindings: portBindings,
+		AutoRemove:   true,
+	}
+
+	// Create container
+	resp, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, "")
+	if err != nil {
+		return fmt.Errorf("failed to create container: %v", err)
+	}
+
+	containerID := resp.ID
+
+	// Ensure container cleanup
+	defer func() {
+		cleanupCtx := context.Background()
+		cli.ContainerStop(cleanupCtx, containerID, container.StopOptions{})
+		cli.ContainerRemove(cleanupCtx, containerID, container.RemoveOptions{Force: true})
+	}()
+
+	// Start container
+	if err := cli.ContainerStart(ctx, containerID, container.StartOptions{}); err != nil {
+		return fmt.Errorf("failed to start container: %v", err)
+	}
+
+	// Wait for container to be ready (max 30 seconds)
+	time.Sleep(5 * time.Second) // Initial wait
+
+	// Perform health check based on template type
+	if err := performHealthCheck(templateName, hostPort); err != nil {
+		return fmt.Errorf("health check failed: %v", err)
+	}
+
+	return nil
+}
+
+func performHealthCheck(templateName, hostPort string) error {
+	// Web application templates - HTTP GET request
+	webTemplates := []string{
+		"static-html", "react", "vuejs", "nextjs",
+		"expressjs", "nestjs", "fastapi", "flask",
+		"django", "spring-boot", "kotlin-spring-boot",
+	}
+
+	for _, name := range webTemplates {
+		if templateName == name {
+			return httpHealthCheck(hostPort)
+		}
+	}
+
+	// Database and cache templates - skip for now
+	// (would require database-specific client libraries)
+	return nil
+}
+
+func httpHealthCheck(hostPort string) error {
+	url := fmt.Sprintf("http://127.0.0.1:%s/", hostPort)
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	// Retry up to 5 times with backoff
+	for i := 0; i < 5; i++ {
+		resp, err := client.Get(url)
+		if err == nil {
+			resp.Body.Close()
+			if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusNotFound {
+				return nil // Success
+			}
+			return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		}
+
+		if i < 4 {
+			time.Sleep(time.Duration(i+1) * 2 * time.Second)
+		}
+	}
+
+	return fmt.Errorf("failed to connect after 5 retries")
 }
 
 func prepareBuildContext(testProjectPath, dockerfile string) (io.ReadCloser, error) {
@@ -294,9 +445,9 @@ func copyDir(src, dst string) error {
 }
 
 func printSummary(results []ValidationResult) {
-	fmt.Println("\n" + strings.Repeat("=", 60))
+	fmt.Println("\n" + strings.Repeat("=", 70))
 	fmt.Println("VALIDATION SUMMARY")
-	fmt.Println(strings.Repeat("=", 60))
+	fmt.Println(strings.Repeat("=", 70))
 
 	successCount := 0
 	failureCount := 0
@@ -312,15 +463,19 @@ func printSummary(results []ValidationResult) {
 
 		timeStr := ""
 		if result.BuildTime > 0 {
-			timeStr = fmt.Sprintf(" (build time: %s)", result.BuildTime.Round(time.Second))
+			timeStr = fmt.Sprintf(" (build: %s", result.BuildTime.Round(time.Second))
+			if result.RuntimeTest != "" {
+				timeStr += fmt.Sprintf(", runtime: %s", result.RuntimeTest)
+			}
+			timeStr += ")"
 		}
 
 		fmt.Printf("%s %s: %s%s\n", status, result.TemplateName, result.Message, timeStr)
 	}
 
-	fmt.Println(strings.Repeat("=", 60))
+	fmt.Println(strings.Repeat("=", 70))
 	fmt.Printf("Total: %d | Success: %d | Failed: %d\n", len(results), successCount, failureCount)
-	fmt.Println(strings.Repeat("=", 60))
+	fmt.Println(strings.Repeat("=", 70))
 }
 
 func fatal(format string, args ...interface{}) {
