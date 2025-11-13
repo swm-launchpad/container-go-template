@@ -1,0 +1,139 @@
+{
+  "vuejs": {
+    "template": "templates/vuejs",
+    "test_project": "test-projects/frontend/vuejs",
+    "default_options": {
+      "node_version": "20",
+      "package_manager": "npm",
+      "app_port": "3000"
+    }
+  },
+  "react": {
+    "template": "templates/react",
+    "test_project": "test-projects/frontend/react",
+    "default_options": {
+      "node_version": "20",
+      "package_manager": "npm",
+      "app_port": "5173"
+    }
+  },
+  "nextjs": {
+    "template": "templates/nextjs",
+    "test_project": "test-projects/frontend/nextjs",
+    "default_options": {
+      "node_version": "20",
+      "package_manager": "npm",
+      "app_port": "3000"
+    }
+  },
+  "static-html": {
+    "template": "templates/static-html",
+    "test_project": "test-projects/frontend/static-html",
+    "default_options": {
+      "nginx_version": "1.26"
+    }
+  },
+  "expressjs": {
+    "template": "templates/expressjs",
+    "test_project": "test-projects/backend/expressjs",
+    "default_options": {
+      "node_version": "20",
+      "package_manager": "npm",
+      "app_port": "3000"
+    }
+  },
+  "nestjs": {
+    "template": "templates/nestjs",
+    "test_project": "test-projects/backend/nestjs",
+    "default_options": {
+      "node_version": "20",
+      "package_manager": "npm",
+      "app_port": "3000"
+    }
+  },
+  "spring-boot": {
+    "template": "templates/spring-boot",
+    "test_project": "test-projects/backend/spring-boot",
+    "default_options": {
+      "java_version": "17",
+      "build_tool": "gradle",
+      "maven_version": "3.9",
+      "app_port": "8080"
+    }
+  },
+  "kotlin-spring-boot": {
+    "template": "templates/kotlin-spring-boot",
+    "test_project": "test-projects/backend/kotlin-spring-boot",
+    "default_options": {
+      "kotlin_version": "1.9",
+      "java_version": "17",
+      "gradle_version": "8.5",
+      "build_tool": "gradle",
+      "maven_version": "3.9",
+      "app_port": "8080"
+    }
+  },
+  "fastapi": {
+    "template": "templates/fastapi",
+    "test_project": "test-projects/backend/fastapi",
+    "default_options": {
+      "python_version": "3.11",
+      "app_port": "8000"
+    }
+  },
+  "flask": {
+    "template": "templates/flask",
+    "test_project": "test-projects/backend/flask",
+    "default_options": {
+      "python_version": "3.11",
+      "app_port": "5000"
+    }
+  },
+  "django": {
+    "template": "templates/django",
+    "test_project": "test-projects/backend/django",
+    "default_options": {
+      "python_version": "3.11",
+      "app_port": "8000"
+    }
+  },
+  "mysql": {
+    "template": "templates/mysql",
+    "test_project": "test-projects/database/mysql",
+    "default_options": {
+      "version": "8.0",
+      "charset": "utf8mb4",
+      "root_password": "changeme",
+      "max_connections": "151"
+    }
+  },
+  "postgresql": {
+    "template": "templates/postgresql",
+    "test_project": "test-projects/database/postgresql",
+    "default_options": {
+      "version": "16",
+      "postgres_password": "changeme",
+      "max_connections": "100",
+      "shared_buffers": "128MB"
+    }
+  },
+  "mongodb": {
+    "template": "templates/mongodb",
+    "test_project": "test-projects/database/mongodb",
+    "default_options": {
+      "mongo_version": "7.0",
+      "mongo_port": "27017",
+      "root_username": "admin",
+      "root_password": "changeme"
+    }
+  },
+  "redis": {
+    "template": "templates/redis",
+    "test_project": "test-projects/database/redis",
+    "default_options": {
+      "redis_version": "7.2",
+      "redis_port": "6379",
+      "redis_password": ""
+    }
+  }
+}
