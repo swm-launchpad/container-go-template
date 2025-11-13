@@ -22,18 +22,26 @@ import (
 	"github.com/moby/term"
 )
 
+type TestProjectDef struct {
+	Name    string            `json:"name"`
+	Path    string            `json:"path"`
+	Options map[string]string `json:"options"`
+}
+
 type TemplateMapping struct {
 	Template       string            `json:"template"`
-	TestProject    string            `json:"test_project"`
-	DefaultOptions map[string]string `json:"default_options"`
+	TestProject    string            `json:"test_project"`    // deprecated, for backward compatibility
+	TestProjects   []TestProjectDef  `json:"test_projects"`   // new
+	DefaultOptions map[string]string `json:"default_options"` // deprecated
 }
 
 type ValidationResult struct {
-	TemplateName string
-	Success      bool
-	Message      string
-	BuildTime    time.Duration
-	RuntimeTest  string
+	TemplateName    string
+	TestProjectName string
+	Success         bool
+	Message         string
+	BuildTime       time.Duration
+	RuntimeTest     string
 }
 
 func main() {
@@ -80,66 +88,77 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("\n=== Validating %s ===\n", templateName)
+		// Get test projects (supports both old and new format)
+		testProjects := getTestProjects(mapping)
 
-		// Step 1: Render template
-		renderedDockerfile, err := renderTemplate(templateName, mapping)
-		if err != nil {
-			results = append(results, ValidationResult{
-				TemplateName: templateName,
-				Success:      false,
-				Message:      fmt.Sprintf("Template rendering failed: %v", err),
-			})
-			fmt.Printf("✗ Template rendering failed: %v\n", err)
-			continue
-		}
-		fmt.Printf("✓ Template rendered successfully\n")
+		// Validate each test project variant
+		for _, testProject := range testProjects {
+			fmt.Printf("\n=== Validating %s (%s) ===\n", templateName, testProject.Name)
 
-		// Step 2: Docker build test (if not skipped)
-		if !*skipBuild {
-			buildTime, err := dockerBuild(templateName, mapping, renderedDockerfile, *timeout, *verbose)
+			// Step 1: Render template
+			renderedDockerfile, err := renderTemplate(templateName, testProject)
 			if err != nil {
 				results = append(results, ValidationResult{
-					TemplateName: templateName,
-					Success:      false,
-					Message:      fmt.Sprintf("Docker build failed: %v", err),
+					TemplateName:    templateName,
+					TestProjectName: testProject.Name,
+					Success:         false,
+					Message:         fmt.Sprintf("Template rendering failed: %v", err),
 				})
-				fmt.Printf("✗ Docker build failed: %v\n", err)
+				fmt.Printf("✗ Template rendering failed: %v\n", err)
 				continue
 			}
-			fmt.Printf("✓ Docker build succeeded (build time: %s)\n", buildTime.Round(time.Second))
+			fmt.Printf("✓ Template rendered successfully\n")
 
-			// Step 3: Runtime test (if requested)
-			runtimeTestResult := "skipped"
-			if *runTest {
-				if err := containerRunTest(templateName, mapping); err != nil {
+			// Step 2: Docker build test (if not skipped)
+			if !*skipBuild {
+				buildTime, err := dockerBuild(templateName, testProject, renderedDockerfile, *timeout, *verbose)
+				if err != nil {
 					results = append(results, ValidationResult{
-						TemplateName: templateName,
-						Success:      false,
-						Message:      fmt.Sprintf("Runtime test failed: %v", err),
-						BuildTime:    buildTime,
-						RuntimeTest:  "failed",
+						TemplateName:    templateName,
+						TestProjectName: testProject.Name,
+						Success:         false,
+						Message:         fmt.Sprintf("Docker build failed: %v", err),
 					})
-					fmt.Printf("✗ Runtime test failed: %v\n", err)
+					fmt.Printf("✗ Docker build failed: %v\n", err)
 					continue
 				}
-				fmt.Printf("✓ Runtime test succeeded\n")
-				runtimeTestResult = "passed"
-			}
+				fmt.Printf("✓ Docker build succeeded (build time: %s)\n", buildTime.Round(time.Second))
 
-			results = append(results, ValidationResult{
-				TemplateName: templateName,
-				Success:      true,
-				Message:      "All checks passed",
-				BuildTime:    buildTime,
-				RuntimeTest:  runtimeTestResult,
-			})
-		} else {
-			results = append(results, ValidationResult{
-				TemplateName: templateName,
-				Success:      true,
-				Message:      "Template rendering passed (build skipped)",
-			})
+				// Step 3: Runtime test (if requested)
+				runtimeTestResult := "skipped"
+				if *runTest {
+					if err := containerRunTest(templateName, testProject); err != nil {
+						results = append(results, ValidationResult{
+							TemplateName:    templateName,
+							TestProjectName: testProject.Name,
+							Success:         false,
+							Message:         fmt.Sprintf("Runtime test failed: %v", err),
+							BuildTime:       buildTime,
+							RuntimeTest:     "failed",
+						})
+						fmt.Printf("✗ Runtime test failed: %v\n", err)
+						continue
+					}
+					fmt.Printf("✓ Runtime test succeeded\n")
+					runtimeTestResult = "passed"
+				}
+
+				results = append(results, ValidationResult{
+					TemplateName:    templateName,
+					TestProjectName: testProject.Name,
+					Success:         true,
+					Message:         "All checks passed",
+					BuildTime:       buildTime,
+					RuntimeTest:     runtimeTestResult,
+				})
+			} else {
+				results = append(results, ValidationResult{
+					TemplateName:    templateName,
+					TestProjectName: testProject.Name,
+					Success:         true,
+					Message:         "Template rendering passed (build skipped)",
+				})
+			}
 		}
 	}
 
@@ -168,9 +187,27 @@ func loadMappings(path string) (map[string]TemplateMapping, error) {
 	return mappings, nil
 }
 
-func renderTemplate(templateName string, mapping TemplateMapping) (string, error) {
-	// Read template file
-	templatePath := filepath.Join(mapping.Template, "template.tmpl")
+// getTestProjects extracts test projects from mapping, supporting both old and new format
+func getTestProjects(mapping TemplateMapping) []TestProjectDef {
+	// New format: test_projects array
+	if len(mapping.TestProjects) > 0 {
+		return mapping.TestProjects
+	}
+
+	// Old format: single test_project (backward compatibility)
+	return []TestProjectDef{{
+		Name:    "default",
+		Path:    mapping.TestProject,
+		Options: mapping.DefaultOptions,
+	}}
+}
+
+func renderTemplate(templateName string, testProject TestProjectDef) (string, error) {
+	// Read template file from parent mapping
+	// Note: testProject.Path is like "test-projects/backend/spring-boot-maven"
+	// We need to get template path from the test project's parent directory structure
+	// For now, derive from standard location: templates/{templateName}/template.tmpl
+	templatePath := filepath.Join("templates", templateName, "template.tmpl")
 	templateContent, err := os.ReadFile(templatePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to read template file: %v", err)
@@ -183,14 +220,14 @@ func renderTemplate(templateName string, mapping TemplateMapping) (string, error
 	}
 
 	var buf strings.Builder
-	if err := tmpl.Execute(&buf, mapping.DefaultOptions); err != nil {
+	if err := tmpl.Execute(&buf, testProject.Options); err != nil {
 		return "", fmt.Errorf("failed to execute template: %v", err)
 	}
 
 	return buf.String(), nil
 }
 
-func dockerBuild(templateName string, mapping TemplateMapping, dockerfile string, timeout time.Duration, verbose bool) (time.Duration, error) {
+func dockerBuild(templateName string, testProject TestProjectDef, dockerfile string, timeout time.Duration, verbose bool) (time.Duration, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -202,15 +239,16 @@ func dockerBuild(templateName string, mapping TemplateMapping, dockerfile string
 	defer cli.Close()
 
 	// Prepare build context
-	buildContext, err := prepareBuildContext(mapping.TestProject, dockerfile)
+	buildContext, err := prepareBuildContext(testProject.Path, dockerfile)
 	if err != nil {
 		return 0, fmt.Errorf("failed to prepare build context: %v", err)
 	}
 	defer buildContext.Close()
 
-	// Build options
+	// Build options - use unique tag per test project variant
+	imageTag := fmt.Sprintf("template-validation:%s-%s", templateName, testProject.Name)
 	buildOptions := types.ImageBuildOptions{
-		Tags:        []string{fmt.Sprintf("template-validation:%s", templateName)},
+		Tags:        []string{imageTag},
 		Dockerfile:  "Dockerfile",
 		Remove:      true,
 		ForceRemove: true,
@@ -242,7 +280,7 @@ func dockerBuild(templateName string, mapping TemplateMapping, dockerfile string
 	return buildTime, nil
 }
 
-func containerRunTest(templateName string, mapping TemplateMapping) error {
+func containerRunTest(templateName string, testProject TestProjectDef) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
@@ -253,11 +291,11 @@ func containerRunTest(templateName string, mapping TemplateMapping) error {
 	}
 	defer cli.Close()
 
-	imageName := fmt.Sprintf("template-validation:%s", templateName)
+	imageName := fmt.Sprintf("template-validation:%s-%s", templateName, testProject.Name)
 
-	// Determine port from mapping
+	// Determine port from test project options
 	var hostPort string
-	appPort := mapping.DefaultOptions["app_port"]
+	appPort := testProject.Options["app_port"]
 	if appPort == "" {
 		// For templates without app_port, skip runtime test
 		return nil
@@ -470,7 +508,13 @@ func printSummary(results []ValidationResult) {
 			timeStr += ")"
 		}
 
-		fmt.Printf("%s %s: %s%s\n", status, result.TemplateName, result.Message, timeStr)
+		// Display template name with test project variant
+		templateDisplay := result.TemplateName
+		if result.TestProjectName != "" && result.TestProjectName != "default" {
+			templateDisplay = fmt.Sprintf("%s (%s)", result.TemplateName, result.TestProjectName)
+		}
+
+		fmt.Printf("%s %s: %s%s\n", status, templateDisplay, result.Message, timeStr)
 	}
 
 	fmt.Println(strings.Repeat("=", 70))
