@@ -77,6 +77,40 @@ jobs:
             --changed '${{ steps.changed.outputs.changed_templates }}' \
             --validate-only
 
+      - name: Validate template rendering
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          cd scripts
+
+          # Extract template names from changed paths
+          CHANGED_TEMPLATES=$(echo '${{ steps.changed.outputs.changed_templates }}' | \
+            jq -r '.[]' | \
+            sed 's|^\.\./templates/||' | \
+            paste -sd ',' -)
+
+          echo "Testing template rendering for: $CHANGED_TEMPLATES"
+          go run validate-templates.go \
+            --templates "$CHANGED_TEMPLATES" \
+            --skip-build
+
+      - name: Docker build validation (changed templates)
+        if: steps.changed.outputs.has_changes == 'true'
+        continue-on-error: true
+        run: |
+          cd scripts
+
+          # Extract template names from changed paths
+          CHANGED_TEMPLATES=$(echo '${{ steps.changed.outputs.changed_templates }}' | \
+            jq -r '.[]' | \
+            sed 's|^\.\./templates/||' | \
+            paste -sd ',' -)
+
+          echo "Testing Docker builds for: $CHANGED_TEMPLATES"
+          go run validate-templates.go \
+            --templates "$CHANGED_TEMPLATES" \
+            --timeout 15m \
+            --verbose
+
       - name: Test migration generation
         if: steps.changed.outputs.has_changes == 'true'
         run: |
