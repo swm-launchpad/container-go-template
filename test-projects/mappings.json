@@ -112,13 +112,28 @@
   },
   "flask": {
     "template": "templates/flask",
-    "test_project": "test-projects/backend/flask",
-    "default_options": {
-      "python_version": "3.11",
-      "dependency_manager": "pip",
-      "app_port": "5000",
-      "app_module": "app:app"
-    }
+    "test_projects": [
+      {
+        "name": "pip",
+        "path": "test-projects/backend/flask-pip",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "pip",
+          "app_port": "5000",
+          "app_module": "app:app"
+        }
+      },
+      {
+        "name": "poetry",
+        "path": "test-projects/backend/flask-poetry",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "poetry",
+          "app_port": "5000",
+          "app_module": "app:app"
+        }
+      }
+    ]
   },
   "django": {
     "template": "templates/django",

@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "flask-app"
+version = "1.0.0"
+description = "Flask application"
+authors = []
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Flask = "3.0.0"
+gunicorn = "21.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
