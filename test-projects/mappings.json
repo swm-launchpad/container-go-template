@@ -17,6 +17,14 @@
           "node_version": "20",
           "package_manager": "yarn"
         }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/frontend/vuejs-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm"
+        }
       }
     ]
   },
@@ -72,6 +80,15 @@
           "package_manager": "yarn",
           "app_port": "3000"
         }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/frontend/nextjs-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "app_port": "3000"
+        }
       }
     ]
   },
@@ -120,6 +137,42 @@
           "app_port": "3000",
           "entry_file": "index.js"
         }
+      },
+      {
+        "name": "pnpm-prod-pm2",
+        "path": "test-projects/backend/expressjs-pnpm-prod-pm2",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "node_env": "production",
+          "process_manager": "pm2",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "pnpm-dev-nodemon",
+        "path": "test-projects/backend/expressjs-pnpm-dev-nodemon",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "node_env": "development",
+          "process_manager": "nodemon",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "pnpm-prod-none",
+        "path": "test-projects/backend/expressjs-pnpm-prod-none",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "node_env": "production",
+          "process_manager": "none",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
       }
     ]
   },
@@ -141,6 +194,15 @@
         "options": {
           "node_version": "20",
           "package_manager": "yarn",
+          "app_port": "3000"
+        }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/backend/nestjs-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
           "app_port": "3000"
         }
       }
