@@ -59,13 +59,13 @@ jobs:
 
           # 변경/추가된 템플릿 감지
           CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
-            grep '^templates/' | \
+            grep '^templates/' || true | \
             cut -d'/' -f1,2 | \
             sort -u)
 
           # 삭제된 템플릿 디렉토리 감지
           DELETED_DIRS=$(git diff --name-only --diff-filter=D $BASE_SHA $HEAD_SHA | \
-            grep '^templates/' | \
+            grep '^templates/' || true | \
             cut -d'/' -f1,2 | \
             sort -u)
 

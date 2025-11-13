@@ -46,7 +46,7 @@ jobs:
           fi
 
           CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
-            grep '^templates/' | \
+            grep '^templates/' || true | \
             cut -d'/' -f1,2 | \
             sort -u)
 
