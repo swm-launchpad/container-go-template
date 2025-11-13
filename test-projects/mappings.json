@@ -1,11 +1,24 @@
 {
   "vuejs": {
     "template": "templates/vuejs",
-    "test_project": "test-projects/frontend/vuejs",
-    "default_options": {
-      "node_version": "20",
-      "package_manager": "npm"
-    }
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/frontend/vuejs-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/frontend/vuejs-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn"
+        }
+      }
+    ]
   },
   "react": {
     "template": "templates/react",
