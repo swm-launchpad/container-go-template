@@ -15,7 +15,8 @@
         "1.25",
         "1.26"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     }
   ],
   "template_ports": [

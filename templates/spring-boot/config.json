@@ -24,7 +24,8 @@
         "17",
         "21"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "gradle",
@@ -34,7 +35,8 @@
         "maven",
         "gradle"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "3.9",
@@ -43,7 +45,8 @@
       "options": [
         "3.9"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "8.5",
@@ -52,14 +55,28 @@
       "options": [
         "8.5"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
+    },
+    {
+      "default": "prod",
+      "label": "Spring Profile",
+      "name": "spring_profile",
+      "options": [
+        "dev",
+        "prod",
+        "test"
+      ],
+      "type": "select",
+      "category": "optional"
     },
     {
       "default": "8080",
       "label": "애플리케이션 포트",
       "name": "app_port",
       "options": [],
-      "type": "number"
+      "type": "number",
+      "category": "optional"
     }
   ],
   "template_ports": [

@@ -21,7 +21,8 @@
         "20",
         "22"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "npm",
@@ -32,7 +33,16 @@
         "yarn",
         "pnpm"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
+    },
+    {
+      "default": "dist",
+      "label": "빌드 출력 디렉토리",
+      "name": "build_output",
+      "options": [],
+      "type": "text",
+      "category": "optional"
     }
   ],
   "template_ports": [

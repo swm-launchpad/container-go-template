@@ -26,7 +26,8 @@
         "3.11",
         "3.12"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "pip",
@@ -37,21 +38,45 @@
         "poetry",
         "pipenv"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "8000",
       "label": "애플리케이션 포트",
       "name": "app_port",
       "options": [],
-      "type": "number"
+      "type": "number",
+      "category": "optional"
     },
     {
       "default": "config.wsgi:application",
       "label": "WSGI 모듈",
       "name": "wsgi_module",
       "options": [],
-      "type": "text"
+      "type": "text",
+      "category": "optional"
+    },
+    {
+      "default": "gunicorn",
+      "label": "WSGI 서버",
+      "name": "wsgi_server",
+      "options": [
+        "gunicorn",
+        "uwsgi"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "description": "WSGI 애플리케이션 서버. Gunicorn은 간편한 설정, uWSGI는 고급 기능 제공."
+    },
+    {
+      "default": "1",
+      "label": "워커 프로세스 수",
+      "name": "workers",
+      "options": [],
+      "type": "number",
+      "category": "advanced",
+      "description": "동시 요청 처리를 위한 워커 프로세스 수. CPU 코어 수와 동일하게 설정 권장."
     }
   ],
   "template_ports": [

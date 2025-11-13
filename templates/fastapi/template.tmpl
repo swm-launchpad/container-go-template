@@ -4,15 +4,15 @@ WORKDIR /app
 
 {{ if eq .dependency_manager "pip" }}
 COPY requirements.txt ./
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir --user -r requirements.txt {{ .asgi_server }}
 {{ else if eq .dependency_manager "poetry" }}
 RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock* ./
-RUN poetry config virtualenvs.create false && poetry install --no-dev --no-root
+RUN poetry config virtualenvs.create false && poetry install --no-dev --no-root && pip install --no-cache-dir {{ .asgi_server }}
 {{ else }}
 RUN pip install --no-cache-dir pipenv
 COPY Pipfile Pipfile.lock* ./
-RUN pipenv install --system --deploy
+RUN pipenv install --system --deploy && pip install --no-cache-dir {{ .asgi_server }}
 {{ end }}
 
 FROM python:{{ .python_version }}-slim
@@ -40,4 +40,8 @@ USER app
 
 EXPOSE {{ .app_port }}
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "{{ .app_port }}"]
+{{ if eq .asgi_server "uvicorn" }}
+CMD ["uvicorn", "{{ .app_module }}", "--host", "0.0.0.0", "--port", "{{ .app_port }}", "--workers", "{{ .workers }}"]
+{{ else }}
+CMD ["hypercorn", "{{ .app_module }}", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "{{ .workers }}"]
+{{ end }}

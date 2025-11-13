@@ -7,7 +7,8 @@
         "path": "test-projects/frontend/vuejs-npm",
         "options": {
           "node_version": "20",
-          "package_manager": "npm"
+          "package_manager": "npm",
+          "build_output": "dist"
         }
       },
       {
@@ -15,7 +16,8 @@
         "path": "test-projects/frontend/vuejs-yarn",
         "options": {
           "node_version": "20",
-          "package_manager": "yarn"
+          "package_manager": "yarn",
+          "build_output": "dist"
         }
       },
       {
@@ -23,7 +25,8 @@
         "path": "test-projects/frontend/vuejs-pnpm",
         "options": {
           "node_version": "20",
-          "package_manager": "pnpm"
+          "package_manager": "pnpm",
+          "build_output": "dist"
         }
       }
     ]
@@ -218,6 +221,7 @@
           "java_version": "17",
           "build_tool": "maven",
           "maven_version": "3.9",
+          "spring_profile": "prod",
           "app_port": "8080"
         }
       },
@@ -228,6 +232,7 @@
           "java_version": "17",
           "build_tool": "gradle",
           "gradle_version": "8.5",
+          "spring_profile": "prod",
           "app_port": "8080"
         }
       },
@@ -238,6 +243,7 @@
           "java_version": "21",
           "build_tool": "maven",
           "maven_version": "3.9",
+          "spring_profile": "prod",
           "app_port": "8080"
         }
       },
@@ -248,6 +254,7 @@
           "java_version": "21",
           "build_tool": "gradle",
           "gradle_version": "8.5",
+          "spring_profile": "prod",
           "app_port": "8080"
         }
       }
@@ -262,6 +269,7 @@
         "options": {
           "java_version": "17",
           "gradle_version": "8.5",
+          "spring_profile": "prod",
           "app_port": "8080"
         }
       },
@@ -271,6 +279,7 @@
         "options": {
           "java_version": "21",
           "gradle_version": "8.5",
+          "spring_profile": "prod",
           "app_port": "8080"
         }
       }
@@ -285,7 +294,10 @@
         "options": {
           "python_version": "3.11",
           "dependency_manager": "pip",
-          "app_port": "8000"
+          "app_port": "8000",
+          "app_module": "main:app",
+          "asgi_server": "uvicorn",
+          "workers": "1"
         }
       },
       {
@@ -294,7 +306,10 @@
         "options": {
           "python_version": "3.11",
           "dependency_manager": "poetry",
-          "app_port": "8000"
+          "app_port": "8000",
+          "app_module": "main:app",
+          "asgi_server": "uvicorn",
+          "workers": "1"
         }
       }
     ]
@@ -309,7 +324,9 @@
           "python_version": "3.11",
           "dependency_manager": "pip",
           "app_port": "5000",
-          "app_module": "app:app"
+          "app_module": "app:app",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
         }
       },
       {
@@ -319,7 +336,9 @@
           "python_version": "3.11",
           "dependency_manager": "poetry",
           "app_port": "5000",
-          "app_module": "app:app"
+          "app_module": "app:app",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
         }
       }
     ]
@@ -334,7 +353,9 @@
           "python_version": "3.11",
           "dependency_manager": "pip",
           "app_port": "8000",
-          "wsgi_module": "config.wsgi:application"
+          "wsgi_module": "config.wsgi:application",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
         }
       },
       {
@@ -344,7 +365,9 @@
           "python_version": "3.11",
           "dependency_manager": "poetry",
           "app_port": "8000",
-          "wsgi_module": "config.wsgi:application"
+          "wsgi_module": "config.wsgi:application",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
         }
       }
     ]
@@ -356,7 +379,12 @@
       "version": "8.0",
       "charset": "utf8mb4",
       "root_password": "",
-      "max_connections": "151"
+      "max_connections": "151",
+      "database_name": "myapp",
+      "user_username": "",
+      "user_password": "",
+      "innodb_buffer_pool_size": "128M",
+      "max_allowed_packet": "64M"
     }
   },
   "postgresql": {
@@ -366,7 +394,12 @@
       "version": "16",
       "max_connections": "100",
       "shared_buffers": "128MB",
-      "postgres_password": ""
+      "postgres_password": "",
+      "database_name": "myapp",
+      "user_username": "",
+      "user_password": "",
+      "effective_cache_size": "4GB",
+      "work_mem": "4MB"
     }
   },
   "mongodb": {
@@ -376,7 +409,11 @@
       "mongo_version": "7.0",
       "mongo_port": "27017",
       "root_username": "",
-      "root_password": ""
+      "root_password": "",
+      "database_name": "",
+      "user_username": "",
+      "user_password": "",
+      "wiredtiger_cache_size": "1GB"
     }
   },
   "redis": {
@@ -385,7 +422,9 @@
     "default_options": {
       "redis_version": "7.2",
       "redis_port": "6379",
-      "redis_password": ""
+      "redis_password": "",
+      "maxmemory": "",
+      "maxmemory_policy": "allkeys-lru"
     }
   }
 }

@@ -26,6 +26,7 @@ USER spring
 
 EXPOSE {{ .app_port }}
 
+ENV SPRING_PROFILES_ACTIVE={{ .spring_profile }}
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
 CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

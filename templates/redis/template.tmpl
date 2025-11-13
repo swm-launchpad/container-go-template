@@ -4,8 +4,4 @@ EXPOSE {{ .redis_port }}
 
 VOLUME ["/data"]
 
-{{ if .redis_password -}}
-CMD ["redis-server", "--port", "{{ .redis_port }}", "--appendonly", "yes", "--requirepass", "{{ .redis_password }}"]
-{{- else -}}
-CMD ["redis-server", "--port", "{{ .redis_port }}", "--appendonly", "yes"]
-{{- end }}
+CMD ["redis-server", "--port", "{{ .redis_port }}", "--appendonly", "yes"{{ if .redis_password }}, "--requirepass", "{{ .redis_password }}"{{ end }}{{ if .maxmemory }}, "--maxmemory", "{{ .maxmemory }}"{{ end }}{{ if .maxmemory_policy }}, "--maxmemory-policy", "{{ .maxmemory_policy }}"{{ end }}]

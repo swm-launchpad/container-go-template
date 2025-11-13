@@ -25,7 +25,8 @@
         "20",
         "22"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "npm",
@@ -36,14 +37,16 @@
         "yarn",
         "pnpm"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "3000",
       "label": "애플리케이션 포트",
       "name": "app_port",
       "options": [],
-      "type": "number"
+      "type": "number",
+      "category": "optional"
     }
   ],
   "template_ports": [

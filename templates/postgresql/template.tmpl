@@ -1,6 +1,14 @@
 FROM postgres:{{ .version }}
 
-{{ if .postgres_password -}}
+{{ if .database_name -}}
+ENV POSTGRES_DB={{ .database_name }}
+{{- end }}
+{{ if .user_username -}}
+ENV POSTGRES_USER={{ .user_username }}
+{{- end }}
+{{ if .user_password -}}
+ENV POSTGRES_PASSWORD={{ .user_password }}
+{{- else if .postgres_password -}}
 ENV POSTGRES_PASSWORD={{ .postgres_password }}
 {{- else -}}
 ENV POSTGRES_HOST_AUTH_METHOD=trust
@@ -9,7 +17,9 @@ ENV POSTGRES_MAX_CONNECTIONS={{ .max_connections }}
 ENV POSTGRES_SHARED_BUFFERS={{ .shared_buffers }}
 
 RUN echo "max_connections = $POSTGRES_MAX_CONNECTIONS" >> /usr/share/postgresql/postgresql.conf.sample && \
-    echo "shared_buffers = $POSTGRES_SHARED_BUFFERS" >> /usr/share/postgresql/postgresql.conf.sample
+    echo "shared_buffers = $POSTGRES_SHARED_BUFFERS" >> /usr/share/postgresql/postgresql.conf.sample{{ if .effective_cache_size }} && \
+    echo "effective_cache_size = {{ .effective_cache_size }}" >> /usr/share/postgresql/postgresql.conf.sample{{ end }}{{ if .work_mem }} && \
+    echo "work_mem = {{ .work_mem }}" >> /usr/share/postgresql/postgresql.conf.sample{{ end }}
 
 EXPOSE 5432
 

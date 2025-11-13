@@ -24,28 +24,65 @@
         "6.0",
         "7.0"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "27017",
       "label": "MongoDB 포트",
       "name": "mongo_port",
       "options": [],
-      "type": "number"
+      "type": "number",
+      "category": "optional"
+    },
+    {
+      "default": "",
+      "label": "데이터베이스명 (선택사항)",
+      "name": "database_name",
+      "options": [],
+      "type": "text",
+      "category": "optional"
     },
     {
       "default": "",
       "label": "Root 사용자명 (선택사항)",
       "name": "root_username",
       "options": [],
-      "type": "text"
+      "type": "text",
+      "category": "optional"
     },
     {
       "default": "",
       "label": "Root 비밀번호 (선택사항)",
       "name": "root_password",
       "options": [],
-      "type": "password"
+      "type": "password",
+      "category": "optional"
+    },
+    {
+      "default": "",
+      "label": "애플리케이션 사용자명 (선택사항)",
+      "name": "user_username",
+      "options": [],
+      "type": "text",
+      "category": "optional"
+    },
+    {
+      "default": "",
+      "label": "애플리케이션 비밀번호 (선택사항)",
+      "name": "user_password",
+      "options": [],
+      "type": "password",
+      "category": "optional"
+    },
+    {
+      "default": "1GB",
+      "label": "WiredTiger 캐시 크기",
+      "name": "wiredtiger_cache_size",
+      "options": [],
+      "type": "text",
+      "category": "advanced",
+      "description": "WiredTiger 스토리지 엔진의 캐시 크기. 전체 메모리의 50% 권장."
     }
   ],
   "template_ports": [

@@ -30,28 +30,76 @@
         "16",
         "17"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
+    },
+    {
+      "default": "myapp",
+      "label": "데이터베이스명",
+      "name": "database_name",
+      "options": [],
+      "type": "text",
+      "category": "optional"
+    },
+    {
+      "default": "",
+      "label": "사용자명 (선택사항)",
+      "name": "user_username",
+      "options": [],
+      "type": "text",
+      "category": "optional"
+    },
+    {
+      "default": "",
+      "label": "비밀번호 (선택사항)",
+      "name": "user_password",
+      "options": [],
+      "type": "password",
+      "category": "optional"
+    },
+    {
+      "default": "",
+      "label": "PostgreSQL Root 비밀번호 (선택사항)",
+      "name": "postgres_password",
+      "options": [],
+      "type": "password",
+      "category": "optional"
     },
     {
       "default": "100",
       "label": "최대 연결 수",
       "name": "max_connections",
       "options": [],
-      "type": "number"
+      "type": "number",
+      "category": "advanced",
+      "description": "동시 접속 가능한 최대 클라이언트 수."
     },
     {
       "default": "128MB",
       "label": "공유 버퍼",
       "name": "shared_buffers",
       "options": [],
-      "type": "text"
+      "type": "text",
+      "category": "advanced",
+      "description": "데이터 캐싱을 위한 메모리 크기. 전체 메모리의 25% 권장."
     },
     {
-      "default": "",
-      "label": "PostgreSQL 비밀번호 (선택사항)",
-      "name": "postgres_password",
+      "default": "4GB",
+      "label": "효과적 캐시 크기",
+      "name": "effective_cache_size",
       "options": [],
-      "type": "password"
+      "type": "text",
+      "category": "advanced",
+      "description": "OS 및 PostgreSQL이 사용 가능한 총 메모리 예상값. 쿼리 플래너가 사용."
+    },
+    {
+      "default": "4MB",
+      "label": "작업 메모리",
+      "name": "work_mem",
+      "options": [],
+      "type": "text",
+      "category": "advanced",
+      "description": "정렬 및 해시 테이블 작업에 사용되는 메모리."
     }
   ],
   "template_ports": [

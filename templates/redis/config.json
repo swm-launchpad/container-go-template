@@ -20,21 +20,48 @@
         "7.0",
         "7.2"
       ],
-      "type": "select"
+      "type": "select",
+      "category": "required"
     },
     {
       "default": "6379",
       "label": "Redis 포트",
       "name": "redis_port",
       "options": [],
-      "type": "number"
+      "type": "number",
+      "category": "optional"
     },
     {
       "default": "",
       "label": "Redis 비밀번호 (선택사항)",
       "name": "redis_password",
       "options": [],
-      "type": "password"
+      "type": "password",
+      "category": "optional"
+    },
+    {
+      "default": "",
+      "label": "최대 메모리",
+      "name": "maxmemory",
+      "options": [],
+      "type": "text",
+      "category": "advanced",
+      "description": "Redis가 사용할 최대 메모리 (예: 256mb, 1gb). 비어있으면 제한 없음."
+    },
+    {
+      "default": "allkeys-lru",
+      "label": "메모리 정책",
+      "name": "maxmemory_policy",
+      "options": [
+        "allkeys-lru",
+        "volatile-lru",
+        "allkeys-lfu",
+        "volatile-lfu",
+        "noeviction"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "description": "메모리 한계 도달 시 키 제거 정책. LRU: 최근 사용, LFU: 사용 빈도."
     }
   ],
   "template_ports": [
