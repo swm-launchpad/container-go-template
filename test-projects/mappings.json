@@ -58,7 +58,7 @@
     "test_project": "test-projects/backend/spring-boot",
     "default_options": {
       "java_version": "17",
-      "build_tool": "gradle",
+      "build_tool": "maven",
       "maven_version": "3.9",
       "app_port": "8080"
     }
