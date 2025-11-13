@@ -91,5 +91,12 @@
       "internal_port": 27017,
       "network_type": "tcp"
     }
+  ],
+  "template_volumes": [
+    {
+      "mount_path": "/data/db",
+      "capacity": 1024,
+      "description": "MongoDB 데이터 저장소"
+    }
   ]
 }

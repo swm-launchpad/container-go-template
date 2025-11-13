@@ -97,5 +97,12 @@
       "internal_port": 3306,
       "network_type": "tcp"
     }
+  ],
+  "template_volumes": [
+    {
+      "mount_path": "/var/lib/mysql",
+      "capacity": 1024,
+      "description": "MySQL 데이터 저장소"
+    }
   ]
 }

@@ -70,5 +70,12 @@
       "internal_port": 6379,
       "network_type": "tcp"
     }
+  ],
+  "template_volumes": [
+    {
+      "mount_path": "/data",
+      "capacity": 512,
+      "description": "Redis RDB 저장소"
+    }
   ]
 }
