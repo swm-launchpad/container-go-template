@@ -13,11 +13,10 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 RUN cp target/*.jar app.jar
 {{ else }}
-COPY build.gradle* settings.gradle* gradlew* ./
-COPY gradle ./gradle 2>/dev/null || true
-RUN if [ -f gradlew ]; then chmod +x gradlew && ./gradlew dependencies --no-daemon; else gradle dependencies --no-daemon; fi
+COPY build.gradle.kts settings.gradle.kts ./
+RUN gradle dependencies --no-daemon
 COPY src ./src
-RUN if [ -f gradlew ]; then ./gradlew clean build -x test --no-daemon; else gradle clean build -x test --no-daemon; fi
+RUN gradle clean build -x test --no-daemon
 RUN cp build/libs/*.jar app.jar
 {{ end }}
 
