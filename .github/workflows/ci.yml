@@ -51,9 +51,9 @@ jobs:
           fi
 
           CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
-            grep '^templates/' || true | \
+            grep '^templates/' | \
             cut -d'/' -f1,2 | \
-            sort -u)
+            sort -u || true)
 
           if [ -z "$CHANGED_DIRS" ]; then
             echo "changed_templates=[]" >> $GITHUB_OUTPUT

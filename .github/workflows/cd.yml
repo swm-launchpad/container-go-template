@@ -64,15 +64,15 @@ jobs:
 
           # 변경/추가된 템플릿 감지
           CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
-            grep '^templates/' || true | \
+            grep '^templates/' | \
             cut -d'/' -f1,2 | \
-            sort -u)
+            sort -u || true)
 
           # 삭제된 템플릿 디렉토리 감지
           DELETED_DIRS=$(git diff --name-only --diff-filter=D $BASE_SHA $HEAD_SHA | \
-            grep '^templates/' || true | \
+            grep '^templates/' | \
             cut -d'/' -f1,2 | \
-            sort -u)
+            sort -u || true)
 
           # 삭제된 템플릿의 이름 추출 (이전 커밋의 metadata.json에서)
           DELETED_NAMES=""
