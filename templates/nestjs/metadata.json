@@ -3,7 +3,7 @@
     "backend"
   ],
   "description": "NestJS 템플릿",
-  "display_order": 0,
+  "display_order": 6,
   "icon_name": "nestjs",
   "name": "NestJS",
   "requires_git": true,

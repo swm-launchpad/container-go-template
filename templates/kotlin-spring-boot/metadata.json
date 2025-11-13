@@ -3,7 +3,7 @@
     "backend"
   ],
   "description": "Kotlin Spring Boot 웹 프레임워크",
-  "display_order": 19,
+  "display_order": 8,
   "icon_name": "kotlin",
   "name": "Kotlin Spring Boot",
   "requires_git": true,

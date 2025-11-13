@@ -3,7 +3,7 @@
     "database"
   ],
   "description": "MySQL 템플릿",
-  "display_order": 0,
+  "display_order": 12,
   "icon_name": "mysql",
   "name": "MySQL",
   "requires_git": false,
