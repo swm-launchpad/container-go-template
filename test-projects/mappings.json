@@ -55,13 +55,28 @@
   },
   "spring-boot": {
     "template": "templates/spring-boot",
-    "test_project": "test-projects/backend/spring-boot",
-    "default_options": {
-      "java_version": "17",
-      "build_tool": "maven",
-      "maven_version": "3.9",
-      "app_port": "8080"
-    }
+    "test_projects": [
+      {
+        "name": "maven",
+        "path": "test-projects/backend/spring-boot-maven",
+        "options": {
+          "java_version": "17",
+          "build_tool": "maven",
+          "maven_version": "3.9",
+          "app_port": "8080"
+        }
+      },
+      {
+        "name": "gradle",
+        "path": "test-projects/backend/spring-boot-gradle",
+        "options": {
+          "java_version": "17",
+          "build_tool": "gradle",
+          "gradle_version": "8.5",
+          "app_port": "8080"
+        }
+      }
+    ]
   },
   "kotlin-spring-boot": {
     "template": "templates/kotlin-spring-boot",

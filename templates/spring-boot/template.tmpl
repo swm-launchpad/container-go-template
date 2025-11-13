@@ -1,4 +1,8 @@
+{{ if eq .build_tool "maven" }}
 FROM maven:{{ .maven_version }}-eclipse-temurin-{{ .java_version }} AS build
+{{ else }}
+FROM gradle:{{ .gradle_version }}-jdk{{ .java_version }}-alpine AS build
+{{ end }}
 
 WORKDIR /app
 
