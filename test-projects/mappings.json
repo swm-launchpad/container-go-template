@@ -45,12 +45,26 @@
   },
   "nextjs": {
     "template": "templates/nextjs",
-    "test_project": "test-projects/frontend/nextjs",
-    "default_options": {
-      "node_version": "20",
-      "package_manager": "npm",
-      "app_port": "3000"
-    }
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/frontend/nextjs-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "app_port": "3000"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/frontend/nextjs-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "app_port": "3000"
+        }
+      }
+    ]
   },
   "static-html": {
     "template": "templates/static-html",
