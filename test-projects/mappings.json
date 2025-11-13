@@ -9,12 +9,26 @@
   },
   "react": {
     "template": "templates/react",
-    "test_project": "test-projects/frontend/react",
-    "default_options": {
-      "node_version": "20",
-      "package_manager": "npm",
-      "build_output": "dist"
-    }
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/frontend/react-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "build_output": "dist"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/frontend/react-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "build_output": "dist"
+        }
+      }
+    ]
   },
   "nextjs": {
     "template": "templates/nextjs",
