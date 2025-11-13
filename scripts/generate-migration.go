@@ -20,6 +20,7 @@ type Template struct {
 func main() {
 	// Flags
 	changedTemplates := flag.String("changed", "", "JSON array of changed template paths")
+	deletedTemplates := flag.String("deleted", "", "JSON array of deleted template names")
 	allTemplates := flag.Bool("all", false, "Process all templates")
 	validateOnly := flag.Bool("validate-only", false, "Only validate, don't generate")
 	output := flag.String("output", "", "Output SQL file path")
@@ -27,6 +28,14 @@ func main() {
 	commitSHA := flag.String("commit-sha", "", "Source commit SHA")
 
 	flag.Parse()
+
+	// Parse deleted template names
+	var deletedNames []string
+	if *deletedTemplates != "" {
+		if err := json.Unmarshal([]byte(*deletedTemplates), &deletedNames); err != nil {
+			fatal("Failed to parse deleted templates JSON: %v", err)
+		}
+	}
 
 	// Load templates
 	var templates []Template
@@ -40,15 +49,18 @@ func main() {
 			fatal("Failed to parse changed templates JSON: %v", err)
 		}
 		templates, err = loadChangedTemplates(changedPaths)
+	} else if len(deletedNames) > 0 {
+		// Only deletions, no changed templates
+		templates = []Template{}
 	} else {
-		fatal("Error: --changed or --all flag required")
+		fatal("Error: --changed, --deleted, or --all flag required")
 	}
 
 	if err != nil {
 		fatal("Failed to load templates: %v", err)
 	}
 
-	if len(templates) == 0 {
+	if len(templates) == 0 && len(deletedNames) == 0 {
 		fmt.Println("⚠️  No templates to process")
 
 		if *output != "" {
@@ -64,7 +76,12 @@ func main() {
 		fatal("Validation failed: %v", err)
 	}
 
-	fmt.Printf("✅ Validated %d templates\n", len(templates))
+	if len(templates) > 0 {
+		fmt.Printf("✅ Validated %d templates\n", len(templates))
+	}
+	if len(deletedNames) > 0 {
+		fmt.Printf("⚠️  Detected %d deleted templates: %v\n", len(deletedNames), deletedNames)
+	}
 
 	if *validateOnly {
 		fmt.Println("✅ Validation complete (--validate-only mode)")
@@ -72,13 +89,14 @@ func main() {
 	}
 
 	// Generate migration SQL
-	sql := generateMigrationSQL(templates, *version, *commitSHA)
+	sql := generateMigrationSQL(templates, deletedNames, *version, *commitSHA)
 
 	// Write output
 	if *output != "" {
 		writeFile(*output, sql)
 		fmt.Printf("✅ Migration file generated: %s\n", *output)
-		fmt.Printf("   Templates processed: %d\n", len(templates))
+		fmt.Printf("   Templates updated: %d\n", len(templates))
+		fmt.Printf("   Templates deleted: %d\n", len(deletedNames))
 	} else {
 		fmt.Println(sql)
 	}
@@ -200,7 +218,7 @@ func validateTemplates(templates []Template) error {
 	return nil
 }
 
-func generateMigrationSQL(templates []Template, version, commitSHA string) string {
+func generateMigrationSQL(templates []Template, deletedNames []string, version, commitSHA string) string {
 	var b strings.Builder
 
 	// Header
@@ -210,50 +228,84 @@ func generateMigrationSQL(templates []Template, version, commitSHA string) strin
 	if commitSHA != "" {
 		b.WriteString(fmt.Sprintf("-- Source commit: %s\n", commitSHA))
 	}
-	b.WriteString(fmt.Sprintf("-- Changed templates: %d\n\n", len(templates)))
+	b.WriteString(fmt.Sprintf("-- Changed templates: %d\n", len(templates)))
+	b.WriteString(fmt.Sprintf("-- Deleted templates: %d\n\n", len(deletedNames)))
 
 	// List changed template names
-	b.WriteString("-- Templates in this migration:\n")
-	for _, tmpl := range templates {
-		categories := tmpl.Config["categories"].([]interface{})
-		categoryStr := ""
-		if len(categories) > 0 {
-			categoryStr = categories[0].(string)
+	if len(templates) > 0 {
+		b.WriteString("-- Updated templates:\n")
+		for _, tmpl := range templates {
+			categories := tmpl.Config["categories"].([]interface{})
+			categoryStr := ""
+			if len(categories) > 0 {
+				categoryStr = categories[0].(string)
+			}
+			b.WriteString(fmt.Sprintf("--   - %s (%s)\n", tmpl.Name, categoryStr))
 		}
-		b.WriteString(fmt.Sprintf("--   - %s (%s)\n", tmpl.Name, categoryStr))
+		b.WriteString("\n")
 	}
-	b.WriteString("\n")
+
+	// List deleted template names
+	if len(deletedNames) > 0 {
+		b.WriteString("-- Deleted templates:\n")
+		for _, name := range deletedNames {
+			b.WriteString(fmt.Sprintf("--   - %s\n", name))
+		}
+		b.WriteString("\n")
+	}
+
+	// Phase 0: Mark deleted templates as inactive
+	if len(deletedNames) > 0 {
+		b.WriteString("-- Phase 0: Mark deleted templates as inactive\n")
+		b.WriteString("-- These templates were removed from the repository\n")
+		b.WriteString("-- Existing containers using these templates are not affected\n")
+		b.WriteString("UPDATE TEMPLATES\n")
+		b.WriteString("SET status = 'inactive'\n")
+		b.WriteString("WHERE name IN (")
+
+		escapedNames := make([]string, len(deletedNames))
+		for i, name := range deletedNames {
+			escapedNames[i] = fmt.Sprintf("'%s'", escapeSQLString(name))
+		}
+		b.WriteString(strings.Join(escapedNames, ", "))
+		b.WriteString(")\n")
+		b.WriteString("AND status = 'active';\n\n")
+	}
 
 	// Phase 1: Deprecate existing templates
-	b.WriteString("-- Phase 1: Deprecate existing versions of changed templates\n")
-	b.WriteString("UPDATE TEMPLATES\n")
-	b.WriteString("SET status = 'deprecated'\n")
-	b.WriteString("WHERE name IN (")
+	if len(templates) > 0 {
+		b.WriteString("-- Phase 1: Deprecate existing versions of changed templates\n")
+		b.WriteString("UPDATE TEMPLATES\n")
+		b.WriteString("SET status = 'deprecated'\n")
+		b.WriteString("WHERE name IN (")
 
-	names := make([]string, len(templates))
-	for i, tmpl := range templates {
-		names[i] = fmt.Sprintf("'%s'", escapeSQLString(tmpl.Name))
+		names := make([]string, len(templates))
+		for i, tmpl := range templates {
+			names[i] = fmt.Sprintf("'%s'", escapeSQLString(tmpl.Name))
+		}
+		b.WriteString(strings.Join(names, ", "))
+		b.WriteString(");\n\n")
 	}
-	b.WriteString(strings.Join(names, ", "))
-	b.WriteString(");\n\n")
 
 	// Phase 2: Insert new template versions
-	b.WriteString("-- Phase 2: Insert new versions of changed templates\n")
-	b.WriteString("INSERT INTO TEMPLATES (name, template_body, template_config, status) VALUES\n\n")
+	if len(templates) > 0 {
+		b.WriteString("-- Phase 2: Insert new versions of changed templates\n")
+		b.WriteString("INSERT INTO TEMPLATES (name, template_body, template_config, status) VALUES\n\n")
 
-	for i, tmpl := range templates {
-		b.WriteString(fmt.Sprintf("-- %s\n", tmpl.Name))
-		b.WriteString(fmt.Sprintf("('%s',\n", escapeSQLString(tmpl.Name)))
-		b.WriteString(fmt.Sprintf("'%s',\n", escapeSQLString(tmpl.TemplateBody)))
+		for i, tmpl := range templates {
+			b.WriteString(fmt.Sprintf("-- %s\n", tmpl.Name))
+			b.WriteString(fmt.Sprintf("('%s',\n", escapeSQLString(tmpl.Name)))
+			b.WriteString(fmt.Sprintf("'%s',\n", escapeSQLString(tmpl.TemplateBody)))
 
-		configJSON, _ := json.Marshal(tmpl.Config)
-		b.WriteString(fmt.Sprintf("'%s',\n", escapeSQLString(string(configJSON))))
-		b.WriteString("'active')")
+			configJSON, _ := json.Marshal(tmpl.Config)
+			b.WriteString(fmt.Sprintf("'%s',\n", escapeSQLString(string(configJSON))))
+			b.WriteString("'active')")
 
-		if i < len(templates)-1 {
-			b.WriteString(",\n\n")
-		} else {
-			b.WriteString(";\n")
+			if i < len(templates)-1 {
+				b.WriteString(",\n\n")
+			} else {
+				b.WriteString(";\n")
+			}
 		}
 	}
 

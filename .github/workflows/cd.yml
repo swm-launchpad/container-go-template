@@ -35,7 +35,7 @@ jobs:
           cache: true
           cache-dependency-path: scripts/go.sum
 
-      - name: Detect changed templates
+      - name: Detect changed and deleted templates
         id: changed
         run: |
           # 수동 트리거에서 force_all_templates=true인 경우 모든 템플릿 포함
@@ -49,6 +49,11 @@ jobs:
           BASE_SHA="${{ github.event.before }}"
           HEAD_SHA="${{ github.sha }}"
 
+          # workflow_dispatch (push 아님) 시 github.event.before는 비어있음
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" == "null" ]; then
+            BASE_SHA="HEAD^"
+          fi
+
           # 첫 커밋인 경우 모든 템플릿 포함
           if [ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]; then
             echo "all_templates=true" >> $GITHUB_OUTPUT
@@ -57,13 +62,32 @@ jobs:
             exit 0
           fi
 
-          # 변경된 템플릿 감지
+          # 변경/추가된 템플릿 감지
           CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
             grep '^templates/' | \
             cut -d'/' -f1,2 | \
-            sort -u)
+            sort -u || true)
 
-          if [ -z "$CHANGED_DIRS" ]; then
+          # 삭제된 템플릿 디렉토리 감지
+          DELETED_DIRS=$(git diff --name-only --diff-filter=D $BASE_SHA $HEAD_SHA | \
+            grep '^templates/' | \
+            cut -d'/' -f1,2 | \
+            sort -u || true)
+
+          # 삭제된 템플릿의 이름 추출 (이전 커밋의 metadata.json에서)
+          DELETED_NAMES=""
+          if [ -n "$DELETED_DIRS" ]; then
+            DELETED_NAMES=$(for dir in $DELETED_DIRS; do
+              git show $BASE_SHA:$dir/metadata.json 2>/dev/null | jq -r '.name' || echo ""
+            done | grep -v '^$' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+
+            if [ "$DELETED_NAMES" == "[]" ] || [ -z "$DELETED_NAMES" ]; then
+              DELETED_NAMES=""
+            fi
+          fi
+
+          # 변경 또는 삭제가 있는지 확인
+          if [ -z "$CHANGED_DIRS" ] && [ -z "$DELETED_NAMES" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "⚠️  No template changes detected - skipping deployment"
             exit 0
@@ -73,8 +97,16 @@ jobs:
 
           echo "has_changes=true" >> $GITHUB_OUTPUT
           echo "changed_templates=$CHANGED_JSON" >> $GITHUB_OUTPUT
-          echo "✅ Changed templates detected:"
-          echo "$CHANGED_DIRS"
+          echo "deleted_templates=$DELETED_NAMES" >> $GITHUB_OUTPUT
+
+          echo "✅ Template changes detected:"
+          if [ -n "$CHANGED_DIRS" ]; then
+            echo "Changed/Added:"
+            echo "$CHANGED_DIRS"
+          fi
+          if [ -n "$DELETED_NAMES" ]; then
+            echo "Deleted: $DELETED_NAMES"
+          fi
 
       - name: Generate migration SQL
         id: generate
@@ -92,8 +124,15 @@ jobs:
               --version $VERSION \
               --commit-sha ${{ github.sha }}
           else
+            # Build command with optional --deleted flag
+            DELETED_ARG=""
+            if [ -n "${{ steps.changed.outputs.deleted_templates }}" ]; then
+              DELETED_ARG="--deleted '${{ steps.changed.outputs.deleted_templates }}'"
+            fi
+
             go run generate-migration.go \
               --changed '${{ steps.changed.outputs.changed_templates }}' \
+              $DELETED_ARG \
               --output /tmp/$MIGRATION_FILE \
               --version $VERSION \
               --commit-sha ${{ github.sha }}
@@ -143,24 +182,33 @@ jobs:
       - name: Verify migration
         if: steps.changed.outputs.has_changes == 'true'
         run: |
-          # deprecated 템플릿 수 확인
-          DEPRECATED_COUNT=$(ssh ubuntu@launchpad.kr "\
-            sudo bash -c 'source /home/ubuntu/mysql/.env && \
-            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status=\\\"deprecated\\\";\"'")
-
           # active 템플릿 수 확인
           ACTIVE_COUNT=$(ssh ubuntu@launchpad.kr "\
             sudo bash -c 'source /home/ubuntu/mysql/.env && \
             docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status=\\\"active\\\";\"'")
 
-          # 최근 추가된 템플릿 확인
+          # deprecated 템플릿 수 확인
+          DEPRECATED_COUNT=$(ssh ubuntu@launchpad.kr "\
+            sudo bash -c 'source /home/ubuntu/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status=\\\"deprecated\\\";\"'")
+
+          # inactive 템플릿 수 확인
+          INACTIVE_COUNT=$(ssh ubuntu@launchpad.kr "\
+            sudo bash -c 'source /home/ubuntu/mysql/.env && \
+            docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT COUNT(*) FROM TEMPLATES WHERE status=\\\"inactive\\\";\"'")
+
+          # 최근 추가/수정된 템플릿 확인
           RECENT_TEMPLATES=$(ssh ubuntu@launchpad.kr "\
             sudo bash -c 'source /home/ubuntu/mysql/.env && \
             docker exec mysql mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=utf8mb4 -N \$MYSQL_DATABASE -e \"SELECT template_id, name, status FROM TEMPLATES ORDER BY template_id DESC LIMIT 5;\"'")
 
           echo "### Migration Verification" >> $GITHUB_STEP_SUMMARY
-          echo "- Deprecated templates: $DEPRECATED_COUNT" >> $GITHUB_STEP_SUMMARY
-          echo "- Active templates: $ACTIVE_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Active | $ACTIVE_COUNT |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deprecated | $DEPRECATED_COUNT |" >> $GITHUB_STEP_SUMMARY
+          echo "| Inactive | $INACTIVE_COUNT |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Recent templates:**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
