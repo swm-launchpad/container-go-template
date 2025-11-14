@@ -12,7 +12,7 @@ RUN poetry config virtualenvs.create false && poetry install --only main --no-ro
 {{ else }}
 RUN pip install --no-cache-dir pipenv
 COPY Pipfile Pipfile.lock* ./
-RUN pipenv install --system --deploy && pip install --no-cache-dir {{ .wsgi_server }}
+RUN pipenv install --system && pip install --no-cache-dir {{ .wsgi_server }}
 {{ end }}
 
 COPY . .

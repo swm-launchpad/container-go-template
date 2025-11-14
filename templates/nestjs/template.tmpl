@@ -4,13 +4,13 @@ WORKDIR /app
 
 {{ if eq .package_manager "npm" }}
 COPY package*.json ./
-RUN npm ci
+RUN npm install --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json yarn.lock* ./
+RUN yarn install
 {{ else }}
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+COPY package.json pnpm-lock.yaml* ./
+RUN npm install -g pnpm && pnpm install
 {{ end }}
 
 COPY . .
@@ -29,13 +29,13 @@ WORKDIR /app
 
 {{ if eq .package_manager "npm" }}
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --only=production --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
-COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile
+COPY package.json yarn.lock* ./
+RUN yarn install --production
 {{ else }}
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
+COPY package.json pnpm-lock.yaml* ./
+RUN npm install -g pnpm && pnpm install --prod
 {{ end }}
 
 COPY --from=builder /app/dist ./dist
