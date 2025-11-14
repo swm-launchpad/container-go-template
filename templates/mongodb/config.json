@@ -28,15 +28,6 @@
       "category": "required"
     },
     {
-      "default": "27017",
-      "label": "MongoDB 포트",
-      "name": "mongo_port",
-      "options": [],
-      "type": "number",
-      "category": "optional",
-      "description": "MongoDB가 실행될 포트 번호입니다. 기본값은 27017입니다."
-    },
-    {
       "label": "데이터베이스명",
       "name": "database_name",
       "options": [],

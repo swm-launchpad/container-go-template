@@ -24,14 +24,6 @@
       "category": "required"
     },
     {
-      "default": "6379",
-      "label": "Redis 포트",
-      "name": "redis_port",
-      "options": [],
-      "type": "number",
-      "category": "optional"
-    },
-    {
       "label": "Redis 비밀번호",
       "name": "redis_password",
       "options": [],

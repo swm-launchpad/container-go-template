@@ -8,8 +8,6 @@ ENV MONGO_INITDB_DATABASE={{ .database_name }}
 RUN echo 'db.getSiblingDB("{{ .database_name }}").createUser({user: "{{ .app_username }}", pwd: "{{ .app_password }}", roles: [{role: "readWrite", db: "{{ .database_name }}"}]})' > /docker-entrypoint-initdb.d/01-create-user.js
 {{- end }}
 
-EXPOSE {{ .mongo_port }}
+EXPOSE 27017
 
 VOLUME ["/data/db", "/data/configdb"]
-
-CMD ["mongod", "--port", "{{ .mongo_port }}"]

@@ -37,10 +37,9 @@ RUN npm install -g nodemon
 
 COPY . .
 
-ENV PORT={{ .app_port }}
 ENV NODE_ENV={{ .build_mode }}
 
-EXPOSE {{ .app_port }}
+EXPOSE 3000
 
 {{ if eq .process_manager "pm2" }}
 CMD ["pm2-runtime", "start", "{{ .entry_file }}", "--name", "express-app"]

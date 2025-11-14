@@ -40,8 +40,6 @@ RUN npm install -g pnpm && pnpm install --prod
 
 COPY --from=builder /app/dist ./dist
 
-ENV PORT={{ .app_port }}
-
-EXPOSE {{ .app_port }}
+EXPOSE 3000
 
 CMD ["node", "dist/main"]
