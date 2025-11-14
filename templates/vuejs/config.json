@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 500,
+    "default_memory": 256,
+    "min_recommended_memory": 128
+  },
   "default_env": [
     {
       "key": "NODE_ENV",

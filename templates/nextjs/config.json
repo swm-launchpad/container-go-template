@@ -1,16 +1,19 @@
 {
+  "default_resources": {
+    "default_cpu": 500,
+    "default_memory": 512,
+    "min_recommended_memory": 512
+  },
   "default_env": [
     {
       "key": "NODE_ENV",
       "value": "production"
     }
   ],
-  "default_ports": [
-    {
-      "internal_port": 3000,
-      "network_type": "http"
-    }
-  ],
+  "port_guide": {
+    "default_port": 3000,
+    "description": "Next.js는 기본적으로 3000번 포트를 사용합니다. next.config.js나 시작 명령어(-p 플래그)에서 변경한 경우 해당 포트를 추가하세요."
+  },
   "template_options": [
     {
       "default": "20",

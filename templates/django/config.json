@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 500,
+    "default_memory": 512,
+    "min_recommended_memory": 512
+  },
   "default_env": [
     {
       "key": "DJANGO_SETTINGS_MODULE",

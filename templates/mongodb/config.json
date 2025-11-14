@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 1000,
+    "default_memory": 1024,
+    "min_recommended_memory": 1024
+  },
   "default_env": [
     {
       "key": "MONGO_INITDB_ROOT_USERNAME",
