@@ -27,7 +27,7 @@ FROM nginx:alpine
 COPY --from=builder /app/{{ .build_output }} /usr/share/nginx/html
 
 RUN echo 'server { \
-    listen 80; \
+    listen {{ .app_port }}; \
     location / { \
         root /usr/share/nginx/html; \
         index index.html; \
@@ -35,6 +35,6 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE {{ .app_port }}
 
 CMD ["nginx", "-g", "daemon off;"]
