@@ -10,7 +10,7 @@ COPY src ./src
 
 RUN gradle clean build -x test --no-daemon
 
-RUN cp build/libs/*.jar app.jar
+RUN cp build/libs/*[!n].jar app.jar
 
 FROM eclipse-temurin:{{ .java_version }}-jre-alpine
 
