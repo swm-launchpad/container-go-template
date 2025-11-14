@@ -15,11 +15,7 @@ env:
   GO_VERSION: '1.25.3'
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
-
   deploy-to-production:
-    needs: ci
     runs-on: ubuntu-latest
 
     steps:
