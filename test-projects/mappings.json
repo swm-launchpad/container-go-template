@@ -407,13 +407,11 @@
     "test_project": "test-projects/database/mongodb",
     "default_options": {
       "mongo_version": "7.0",
-      "mongo_port": "27017",
-      "root_username": "",
-      "root_password": "",
-      "database_name": "",
-      "user_username": "",
-      "user_password": "",
-      "wiredtiger_cache_size": "1GB"
+      "root_username": "admin",
+      "root_password": "testpass",
+      "database_name": "testdb",
+      "app_username": "",
+      "app_password": ""
     }
   },
   "redis": {
@@ -421,8 +419,7 @@
     "test_project": "test-projects/database/redis",
     "default_options": {
       "redis_version": "7.2",
-      "redis_port": "6379",
-      "redis_password": "",
+      "redis_password": "testpass",
       "maxmemory": "",
       "maxmemory_policy": "allkeys-lru"
     }
