@@ -4,6 +4,12 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      force_all_templates:
+        description: 'Validate all templates (skip change detection)'
+        required: false
+        type: boolean
+        default: false
   workflow_call:
 
 env:
@@ -33,6 +39,22 @@ jobs:
       - name: Detect changed templates
         id: changed
         run: |
+          # Force validate all templates (manual trigger)
+          if [ "${{ github.event.inputs.force_all_templates }}" == "true" ]; then
+            echo "🔍 Force validate all templates (manual trigger)"
+            TEMPLATE_CHANGES=$(cat test-projects/mappings.json | jq -r 'keys[]' | sort -u)
+            CHANGED_JSON=$(echo "$TEMPLATE_CHANGES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "changed_templates=$CHANGED_JSON" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+
+            echo "### Force Validate All Templates" >> $GITHUB_STEP_SUMMARY
+            echo "Manual trigger - validating all templates" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "$TEMPLATE_CHANGES" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
           # 이벤트 타입에 따라 BASE_SHA/HEAD_SHA 설정
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"

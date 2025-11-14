@@ -62,8 +62,8 @@ jobs:
             exit 0
           fi
 
-          # 변경/추가된 템플릿 감지
-          CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
+          # 변경/추가된 템플릿 감지 (삭제된 것 제외)
+          CHANGED_DIRS=$(git diff --name-only --diff-filter=AM $BASE_SHA $HEAD_SHA | \
             grep '^templates/' | \
             cut -d'/' -f1,2 | \
             sort -u || true)
@@ -125,9 +125,12 @@ jobs:
               --commit-sha ${{ github.sha }}
           else
             # Build command with optional --deleted flag
+            DELETED_TEMPLATES="${{ steps.changed.outputs.deleted_templates }}"
             DELETED_ARG=""
-            if [ -n "${{ steps.changed.outputs.deleted_templates }}" ]; then
-              DELETED_ARG="--deleted '${{ steps.changed.outputs.deleted_templates }}'"
+
+            # Check if deleted_templates is not empty and not an empty array
+            if [ -n "$DELETED_TEMPLATES" ] && [ "$DELETED_TEMPLATES" != "[]" ]; then
+              DELETED_ARG="--deleted '$DELETED_TEMPLATES'"
             fi
 
             go run generate-migration.go \
