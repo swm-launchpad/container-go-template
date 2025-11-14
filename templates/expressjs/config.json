@@ -60,12 +60,18 @@
       "category": "optional"
     },
     {
-      "default": "index.js",
       "label": "진입 파일",
       "name": "entry_file",
-      "options": [],
-      "type": "text",
-      "category": "optional"
+      "options": [
+        "index.js",
+        "server.js",
+        "app.js"
+      ],
+      "type": "select",
+      "category": "required",
+      "allow_custom": true,
+      "custom_label": "기타(직접 입력)",
+      "description": "Express 서버가 시작되는 파일명을 선택하세요. package.json의 'main' 필드나 start 스크립트를 확인하세요."
     },
     {
       "default": "none",
