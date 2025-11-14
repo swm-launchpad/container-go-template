@@ -35,35 +35,29 @@
     },
     {
       "default": "",
-      "label": "PostgreSQL Root 비밀번호",
-      "name": "postgres_password",
-      "options": [],
-      "type": "password",
-      "category": "required"
-    },
-    {
-      "default": "",
       "label": "데이터베이스명",
       "name": "database_name",
       "options": [],
       "type": "text",
-      "category": "optional"
+      "category": "required",
+      "description": "초기 생성할 데이터베이스명. POSTGRES_DB 환경변수로 설정됩니다."
     },
     {
-      "default": "",
-      "label": "사용자명",
-      "name": "user_username",
+      "default": "postgres",
+      "label": "Superuser 이름",
+      "name": "superuser_username",
       "options": [],
       "type": "text",
-      "category": "optional"
+      "category": "required",
+      "description": "PostgreSQL superuser 계정명. 기본값은 'postgres'입니다."
     },
     {
-      "default": "",
-      "label": "비밀번호",
-      "name": "user_password",
+      "label": "Superuser 비밀번호",
+      "name": "superuser_password",
       "options": [],
       "type": "password",
-      "category": "optional"
+      "category": "required",
+      "description": "PostgreSQL superuser 계정 비밀번호. 보안을 위해 필수로 설정해야 합니다."
     },
     {
       "default": "100",
