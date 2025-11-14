@@ -1,15 +1,11 @@
 FROM mongo:{{ .mongo_version }}
 
-{{ if and .root_username .root_password -}}
 ENV MONGO_INITDB_ROOT_USERNAME={{ .root_username }}
 ENV MONGO_INITDB_ROOT_PASSWORD={{ .root_password }}
-{{- end }}
-{{ if .database_name -}}
 ENV MONGO_INITDB_DATABASE={{ .database_name }}
-{{- end }}
 
-{{ if and .database_name .user_username .user_password -}}
-RUN echo 'db.getSiblingDB("{{ .database_name }}").createUser({user: "{{ .user_username }}", pwd: "{{ .user_password }}", roles: [{role: "readWrite", db: "{{ .database_name }}"}]})' > /docker-entrypoint-initdb.d/01-create-user.js
+{{ if and .app_username .app_password -}}
+RUN echo 'db.getSiblingDB("{{ .database_name }}").createUser({user: "{{ .app_username }}", pwd: "{{ .app_password }}", roles: [{role: "readWrite", db: "{{ .database_name }}"}]})' > /docker-entrypoint-initdb.d/01-create-user.js
 {{- end }}
 
 EXPOSE {{ .mongo_port }}
