@@ -13,11 +13,11 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 RUN cp target/*.jar app.jar
 {{ else }}
-COPY build.gradle.kts settings.gradle.kts ./
+COPY build.gradle.kts settings.gradle.kts* ./
 RUN gradle dependencies --no-daemon
 COPY src ./src
 RUN gradle clean build -x test --no-daemon
-RUN cp build/libs/*[!n].jar app.jar
+RUN cp $(find build/libs -name "*[!n].jar" -type f | head -n 1) app.jar 2>/dev/null || cp build/libs/*.jar app.jar
 {{ end }}
 
 FROM eclipse-temurin:{{ .java_version }}-jre-alpine

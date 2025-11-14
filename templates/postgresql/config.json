@@ -34,7 +34,15 @@
       "category": "required"
     },
     {
-      "default": "myapp",
+      "default": "",
+      "label": "PostgreSQL Root 비밀번호",
+      "name": "postgres_password",
+      "options": [],
+      "type": "password",
+      "category": "required"
+    },
+    {
+      "default": "",
       "label": "데이터베이스명",
       "name": "database_name",
       "options": [],
@@ -43,7 +51,7 @@
     },
     {
       "default": "",
-      "label": "사용자명 (선택사항)",
+      "label": "사용자명",
       "name": "user_username",
       "options": [],
       "type": "text",
@@ -51,16 +59,8 @@
     },
     {
       "default": "",
-      "label": "비밀번호 (선택사항)",
+      "label": "비밀번호",
       "name": "user_password",
-      "options": [],
-      "type": "password",
-      "category": "optional"
-    },
-    {
-      "default": "",
-      "label": "PostgreSQL Root 비밀번호 (선택사항)",
-      "name": "postgres_password",
       "options": [],
       "type": "password",
       "category": "optional"

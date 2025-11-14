@@ -33,7 +33,7 @@
     },
     {
       "default": "",
-      "label": "Redis 비밀번호 (선택사항)",
+      "label": "Redis 비밀번호",
       "name": "redis_password",
       "options": [],
       "type": "password",

@@ -13,8 +13,8 @@ ENV POSTGRES_PASSWORD={{ .postgres_password }}
 {{- else -}}
 ENV POSTGRES_HOST_AUTH_METHOD=trust
 {{- end }}
-ENV POSTGRES_MAX_CONNECTIONS={{ .max_connections }}
-ENV POSTGRES_SHARED_BUFFERS={{ .shared_buffers }}
+ENV POSTGRES_MAX_CONNECTIONS={{ if .max_connections }}{{ .max_connections }}{{ else }}100{{ end }}
+ENV POSTGRES_SHARED_BUFFERS={{ if .shared_buffers }}{{ .shared_buffers }}{{ else }}128MB{{ end }}
 
 RUN echo "max_connections = $POSTGRES_MAX_CONNECTIONS" >> /usr/share/postgresql/postgresql.conf.sample && \
     echo "shared_buffers = $POSTGRES_SHARED_BUFFERS" >> /usr/share/postgresql/postgresql.conf.sample{{ if .effective_cache_size }} && \

@@ -5,27 +5,27 @@ WORKDIR /app
 {{ if eq .package_manager "npm" }}
 COPY package*.json ./
 {{ else if eq .package_manager "yarn" }}
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock* ./
 {{ else }}
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm
 {{ end }}
 
 {{ if eq .node_env "production" }}
 {{ if eq .package_manager "npm" }}
-RUN npm ci --only=production
+RUN npm install --only=production --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
-RUN yarn install --production --frozen-lockfile
+RUN yarn install --production
 {{ else }}
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod
 {{ end }}
 {{ else }}
 {{ if eq .package_manager "npm" }}
-RUN npm ci
+RUN npm install --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
-RUN yarn install --frozen-lockfile
+RUN yarn install
 {{ else }}
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 {{ end }}
 {{ end }}
 

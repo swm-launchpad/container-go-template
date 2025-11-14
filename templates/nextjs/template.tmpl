@@ -4,13 +4,13 @@ WORKDIR /app
 
 {{ if eq .package_manager "npm" }}
 COPY package*.json ./
-RUN npm ci
+RUN npm install --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json yarn.lock* ./
+RUN yarn install
 {{ else }}
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+COPY package.json pnpm-lock.yaml* ./
+RUN npm install -g pnpm && pnpm install
 {{ end }}
 
 FROM node:{{ .node_version }}-alpine AS builder
@@ -23,6 +23,8 @@ RUN npm install -g pnpm
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+RUN mkdir -p public
 
 {{ if eq .package_manager "npm" }}
 RUN npm run build

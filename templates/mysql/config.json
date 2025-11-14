@@ -41,7 +41,15 @@
       "category": "required"
     },
     {
-      "default": "myapp",
+      "default": "",
+      "label": "Root 비밀번호",
+      "name": "root_password",
+      "options": [],
+      "type": "password",
+      "category": "required"
+    },
+    {
+      "default": "",
       "label": "데이터베이스명",
       "name": "database_name",
       "options": [],
@@ -50,15 +58,7 @@
     },
     {
       "default": "",
-      "label": "Root 비밀번호 (선택사항)",
-      "name": "root_password",
-      "options": [],
-      "type": "password",
-      "category": "optional"
-    },
-    {
-      "default": "",
-      "label": "애플리케이션 사용자명 (선택사항)",
+      "label": "애플리케이션 사용자명",
       "name": "user_username",
       "options": [],
       "type": "text",
@@ -66,7 +66,7 @@
     },
     {
       "default": "",
-      "label": "애플리케이션 비밀번호 (선택사항)",
+      "label": "애플리케이션 비밀번호",
       "name": "user_password",
       "options": [],
       "type": "password",
