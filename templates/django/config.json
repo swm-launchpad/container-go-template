@@ -50,12 +50,18 @@
       "category": "optional"
     },
     {
-      "default": "config.wsgi:application",
       "label": "WSGI 모듈",
       "name": "wsgi_module",
-      "options": [],
-      "type": "text",
-      "category": "optional"
+      "options": [
+        "config.wsgi:application",
+        "myproject.wsgi:application",
+        "app.wsgi:application"
+      ],
+      "type": "select",
+      "category": "required",
+      "allow_custom": true,
+      "custom_label": "기타(직접 입력)",
+      "description": "Django 프로젝트의 WSGI 모듈 경로를 선택하세요. settings.py가 있는 디렉토리의 wsgi.py를 찾아 '디렉토리명.wsgi:application' 형식으로 입력합니다."
     },
     {
       "default": "gunicorn",
