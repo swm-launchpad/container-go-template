@@ -3,10 +3,6 @@
     {
       "key": "PYTHONUNBUFFERED",
       "value": "1"
-    },
-    {
-      "key": "PORT",
-      "value": "8000"
     }
   ],
   "default_ports": [
@@ -47,7 +43,8 @@
       "name": "app_port",
       "options": [],
       "type": "number",
-      "category": "optional"
+      "category": "optional",
+      "description": "FastAPI 서버가 실행될 포트 번호. ASGI 서버 실행 시 이 포트로 바인딩되며, 네트워크 포트와 자동으로 동기화됩니다."
     },
     {
       "label": "애플리케이션 모듈",

@@ -33,7 +33,8 @@
       "name": "mongo_port",
       "options": [],
       "type": "number",
-      "category": "optional"
+      "category": "optional",
+      "description": "MongoDB가 실행될 포트 번호입니다. 기본값은 27017입니다."
     },
     {
       "label": "데이터베이스명",
@@ -77,15 +78,6 @@
       "type": "password",
       "category": "optional",
       "description": "애플리케이션 계정의 비밀번호. 사용자명과 함께 설정 시 Init 스크립트를 통해 계정이 생성됩니다."
-    },
-    {
-      "default": "1GB",
-      "label": "WiredTiger 캐시 크기",
-      "name": "wiredtiger_cache_size",
-      "options": [],
-      "type": "text",
-      "category": "advanced",
-      "description": "WiredTiger 스토리지 엔진의 캐시 크기. 전체 메모리의 50% 권장."
     }
   ],
   "template_ports": [

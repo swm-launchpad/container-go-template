@@ -3,10 +3,6 @@
     {
       "key": "NODE_ENV",
       "value": "production"
-    },
-    {
-      "key": "PORT",
-      "value": "3000"
     }
   ],
   "default_ports": [
@@ -42,14 +38,15 @@
     },
     {
       "default": "production",
-      "label": "Node 환경",
-      "name": "node_env",
+      "label": "빌드 모드",
+      "name": "build_mode",
       "options": [
         "development",
         "production"
       ],
       "type": "select",
-      "category": "optional"
+      "category": "optional",
+      "description": "의존성 설치 모드. production: 프로덕션 의존성만 설치, development: 모든 의존성 설치 (devDependencies 포함)"
     },
     {
       "default": "3000",
@@ -57,7 +54,8 @@
       "name": "app_port",
       "options": [],
       "type": "number",
-      "category": "optional"
+      "category": "optional",
+      "description": "Express 서버가 실행될 포트 번호. 이 값은 환경변수 PORT로 설정되어 애플리케이션에 전달되며, 네트워크 포트와 자동으로 동기화됩니다."
     },
     {
       "label": "진입 파일",

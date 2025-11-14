@@ -1,10 +1,5 @@
 {
-  "default_env": [
-    {
-      "key": "SERVER_PORT",
-      "value": "8080"
-    }
-  ],
+  "default_env": [],
   "default_ports": [
     {
       "internal_port": 8080,
@@ -42,7 +37,8 @@
         "3.9"
       ],
       "type": "select",
-      "category": "required"
+      "category": "advanced",
+      "description": "Maven 빌드 도구 버전. 특별한 이유가 없다면 기본값 사용을 권장합니다."
     },
     {
       "default": "8.5",
@@ -52,7 +48,8 @@
         "8.5"
       ],
       "type": "select",
-      "category": "required"
+      "category": "advanced",
+      "description": "Gradle 빌드 도구 버전. 특별한 이유가 없다면 기본값 사용을 권장합니다."
     },
     {
       "default": "prod",
@@ -72,7 +69,8 @@
       "name": "app_port",
       "options": [],
       "type": "number",
-      "category": "optional"
+      "category": "optional",
+      "description": "Spring Boot 서버가 실행될 포트 번호. 이 값은 환경변수 SERVER_PORT로 설정되어 애플리케이션에 전달되며, 네트워크 포트와 자동으로 동기화됩니다."
     }
   ],
   "template_ports": [

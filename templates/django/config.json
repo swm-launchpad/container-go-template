@@ -47,7 +47,8 @@
       "name": "app_port",
       "options": [],
       "type": "number",
-      "category": "optional"
+      "category": "optional",
+      "description": "Django 서버가 실행될 포트 번호. WSGI 서버 실행 시 이 포트로 바인딩되며, 네트워크 포트와 자동으로 동기화됩니다."
     },
     {
       "label": "WSGI 모듈",

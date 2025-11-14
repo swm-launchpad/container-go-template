@@ -11,3 +11,5 @@ RUN echo 'db.getSiblingDB("{{ .database_name }}").createUser({user: "{{ .app_use
 EXPOSE {{ .mongo_port }}
 
 VOLUME ["/data/db", "/data/configdb"]
+
+CMD ["mongod", "--port", "{{ .mongo_port }}"]

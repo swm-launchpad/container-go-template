@@ -54,6 +54,8 @@ COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
 
+ENV PORT={{ .app_port }}
+
 EXPOSE {{ .app_port }}
 
 {{ if eq .package_manager "npm" }}

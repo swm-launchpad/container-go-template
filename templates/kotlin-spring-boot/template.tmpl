@@ -24,9 +24,10 @@ RUN chown spring:spring app.jar
 
 USER spring
 
-EXPOSE {{ .app_port }}
-
+ENV SERVER_PORT={{ .app_port }}
 ENV SPRING_PROFILES_ACTIVE={{ .spring_profile }}
+
+EXPOSE {{ .app_port }}
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
 CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

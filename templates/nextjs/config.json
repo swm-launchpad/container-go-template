@@ -3,10 +3,6 @@
     {
       "key": "NODE_ENV",
       "value": "production"
-    },
-    {
-      "key": "PORT",
-      "value": "3000"
     }
   ],
   "default_ports": [
@@ -46,7 +42,8 @@
       "name": "app_port",
       "options": [],
       "type": "number",
-      "category": "optional"
+      "category": "optional",
+      "description": "Next.js 서버가 실행될 포트 번호. 이 값은 환경변수 PORT로 설정되어 애플리케이션에 전달되며, 네트워크 포트와 자동으로 동기화됩니다."
     }
   ],
   "template_ports": [
