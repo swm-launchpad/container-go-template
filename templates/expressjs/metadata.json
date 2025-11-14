@@ -3,7 +3,7 @@
     "backend"
   ],
   "description": "Express.js 템플릿",
-  "display_order": 0,
+  "display_order": 5,
   "icon_name": "expressjs",
   "name": "Express.js",
   "requires_git": true,

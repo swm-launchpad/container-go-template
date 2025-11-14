@@ -1,0 +1,430 @@
+{
+  "vuejs": {
+    "template": "templates/vuejs",
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/frontend/vuejs-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "build_output": "dist"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/frontend/vuejs-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "build_output": "dist"
+        }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/frontend/vuejs-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "build_output": "dist"
+        }
+      }
+    ]
+  },
+  "react": {
+    "template": "templates/react",
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/frontend/react-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "build_output": "dist"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/frontend/react-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "build_output": "dist"
+        }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/frontend/react-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "build_output": "dist"
+        }
+      }
+    ]
+  },
+  "nextjs": {
+    "template": "templates/nextjs",
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/frontend/nextjs-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "app_port": "3000"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/frontend/nextjs-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "app_port": "3000"
+        }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/frontend/nextjs-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "app_port": "3000"
+        }
+      }
+    ]
+  },
+  "static-html": {
+    "template": "templates/static-html",
+    "test_project": "test-projects/frontend/static-html",
+    "default_options": {
+      "nginx_version": "1.26"
+    }
+  },
+  "expressjs": {
+    "template": "templates/expressjs",
+    "test_projects": [
+      {
+        "name": "npm-prod-pm2",
+        "path": "test-projects/backend/expressjs-npm-prod-pm2",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "node_env": "production",
+          "process_manager": "pm2",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "yarn-dev-nodemon",
+        "path": "test-projects/backend/expressjs-yarn-dev-nodemon",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "node_env": "development",
+          "process_manager": "nodemon",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "npm-prod-none",
+        "path": "test-projects/backend/expressjs-npm-prod-none",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "node_env": "production",
+          "process_manager": "none",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "pnpm-prod-pm2",
+        "path": "test-projects/backend/expressjs-pnpm-prod-pm2",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "node_env": "production",
+          "process_manager": "pm2",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "pnpm-dev-nodemon",
+        "path": "test-projects/backend/expressjs-pnpm-dev-nodemon",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "node_env": "development",
+          "process_manager": "nodemon",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      },
+      {
+        "name": "pnpm-prod-none",
+        "path": "test-projects/backend/expressjs-pnpm-prod-none",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "node_env": "production",
+          "process_manager": "none",
+          "app_port": "3000",
+          "entry_file": "index.js"
+        }
+      }
+    ]
+  },
+  "nestjs": {
+    "template": "templates/nestjs",
+    "test_projects": [
+      {
+        "name": "npm",
+        "path": "test-projects/backend/nestjs-npm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "npm",
+          "app_port": "3000"
+        }
+      },
+      {
+        "name": "yarn",
+        "path": "test-projects/backend/nestjs-yarn",
+        "options": {
+          "node_version": "20",
+          "package_manager": "yarn",
+          "app_port": "3000"
+        }
+      },
+      {
+        "name": "pnpm",
+        "path": "test-projects/backend/nestjs-pnpm",
+        "options": {
+          "node_version": "20",
+          "package_manager": "pnpm",
+          "app_port": "3000"
+        }
+      }
+    ]
+  },
+  "spring-boot": {
+    "template": "templates/spring-boot",
+    "test_projects": [
+      {
+        "name": "maven",
+        "path": "test-projects/backend/spring-boot-maven",
+        "options": {
+          "java_version": "17",
+          "build_tool": "maven",
+          "maven_version": "3.9",
+          "spring_profile": "prod",
+          "app_port": "8080"
+        }
+      },
+      {
+        "name": "gradle",
+        "path": "test-projects/backend/spring-boot-gradle",
+        "options": {
+          "java_version": "17",
+          "build_tool": "gradle",
+          "gradle_version": "8.5",
+          "spring_profile": "prod",
+          "app_port": "8080"
+        }
+      },
+      {
+        "name": "maven-java21",
+        "path": "test-projects/backend/spring-boot-maven-java21",
+        "options": {
+          "java_version": "21",
+          "build_tool": "maven",
+          "maven_version": "3.9",
+          "spring_profile": "prod",
+          "app_port": "8080"
+        }
+      },
+      {
+        "name": "gradle-java21",
+        "path": "test-projects/backend/spring-boot-gradle-java21",
+        "options": {
+          "java_version": "21",
+          "build_tool": "gradle",
+          "gradle_version": "8.5",
+          "spring_profile": "prod",
+          "app_port": "8080"
+        }
+      }
+    ]
+  },
+  "kotlin-spring-boot": {
+    "template": "templates/kotlin-spring-boot",
+    "test_projects": [
+      {
+        "name": "java17",
+        "path": "test-projects/backend/kotlin-spring-boot-java17",
+        "options": {
+          "java_version": "17",
+          "gradle_version": "8.5",
+          "spring_profile": "prod",
+          "app_port": "8080"
+        }
+      },
+      {
+        "name": "java21",
+        "path": "test-projects/backend/kotlin-spring-boot-java21",
+        "options": {
+          "java_version": "21",
+          "gradle_version": "8.5",
+          "spring_profile": "prod",
+          "app_port": "8080"
+        }
+      }
+    ]
+  },
+  "fastapi": {
+    "template": "templates/fastapi",
+    "test_projects": [
+      {
+        "name": "pip",
+        "path": "test-projects/backend/fastapi-pip",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "pip",
+          "app_port": "8000",
+          "app_module": "main:app",
+          "asgi_server": "uvicorn",
+          "workers": "1"
+        }
+      },
+      {
+        "name": "poetry",
+        "path": "test-projects/backend/fastapi-poetry",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "poetry",
+          "app_port": "8000",
+          "app_module": "main:app",
+          "asgi_server": "uvicorn",
+          "workers": "1"
+        }
+      }
+    ]
+  },
+  "flask": {
+    "template": "templates/flask",
+    "test_projects": [
+      {
+        "name": "pip",
+        "path": "test-projects/backend/flask-pip",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "pip",
+          "app_port": "5000",
+          "app_module": "app:app",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
+        }
+      },
+      {
+        "name": "poetry",
+        "path": "test-projects/backend/flask-poetry",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "poetry",
+          "app_port": "5000",
+          "app_module": "app:app",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
+        }
+      }
+    ]
+  },
+  "django": {
+    "template": "templates/django",
+    "test_projects": [
+      {
+        "name": "pip",
+        "path": "test-projects/backend/django-pip",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "pip",
+          "app_port": "8000",
+          "wsgi_module": "config.wsgi:application",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
+        }
+      },
+      {
+        "name": "poetry",
+        "path": "test-projects/backend/django-poetry",
+        "options": {
+          "python_version": "3.11",
+          "dependency_manager": "poetry",
+          "app_port": "8000",
+          "wsgi_module": "config.wsgi:application",
+          "wsgi_server": "gunicorn",
+          "workers": "1"
+        }
+      }
+    ]
+  },
+  "mysql": {
+    "template": "templates/mysql",
+    "test_project": "test-projects/database/mysql",
+    "default_options": {
+      "version": "8.0",
+      "charset": "utf8mb4",
+      "root_password": "",
+      "max_connections": "151",
+      "database_name": "myapp",
+      "user_username": "",
+      "user_password": "",
+      "innodb_buffer_pool_size": "128M",
+      "max_allowed_packet": "64M"
+    }
+  },
+  "postgresql": {
+    "template": "templates/postgresql",
+    "test_project": "test-projects/database/postgresql",
+    "default_options": {
+      "version": "16",
+      "max_connections": "100",
+      "shared_buffers": "128MB",
+      "postgres_password": "",
+      "database_name": "myapp",
+      "user_username": "",
+      "user_password": "",
+      "effective_cache_size": "4GB",
+      "work_mem": "4MB"
+    }
+  },
+  "mongodb": {
+    "template": "templates/mongodb",
+    "test_project": "test-projects/database/mongodb",
+    "default_options": {
+      "mongo_version": "7.0",
+      "mongo_port": "27017",
+      "root_username": "",
+      "root_password": "",
+      "database_name": "",
+      "user_username": "",
+      "user_password": "",
+      "wiredtiger_cache_size": "1GB"
+    }
+  },
+  "redis": {
+    "template": "templates/redis",
+    "test_project": "test-projects/database/redis",
+    "default_options": {
+      "redis_version": "7.2",
+      "redis_port": "6379",
+      "redis_password": "",
+      "maxmemory": "",
+      "maxmemory_policy": "allkeys-lru"
+    }
+  }
+}

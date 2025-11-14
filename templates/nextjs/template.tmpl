@@ -17,6 +17,10 @@ FROM node:{{ .node_version }}-alpine AS builder
 
 WORKDIR /app
 
+{{ if eq .package_manager "pnpm" }}
+RUN npm install -g pnpm
+{{ end }}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -36,6 +40,10 @@ ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
+
+{{ if eq .package_manager "pnpm" }}
+RUN npm install -g pnpm
+{{ end }}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next

@@ -3,7 +3,7 @@
     "backend"
   ],
   "description": "Java 기반 엔터프라이즈급 웹 프레임워크",
-  "display_order": 10,
+  "display_order": 7,
   "icon_name": "spring",
   "name": "Spring Boot",
   "requires_git": true,

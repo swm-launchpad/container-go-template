@@ -3,7 +3,7 @@
     "frontend"
   ],
   "description": "Vue.js 템플릿",
-  "display_order": 0,
+  "display_order": 1,
   "icon_name": "vuejs",
   "name": "Vue.js",
   "requires_git": true,

@@ -4,15 +4,15 @@ WORKDIR /app
 
 {{ if eq .dependency_manager "pip" }}
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
+RUN pip install --no-cache-dir -r requirements.txt {{ .wsgi_server }}
 {{ else if eq .dependency_manager "poetry" }}
 RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock* ./
-RUN poetry config virtualenvs.create false && poetry install --no-dev --no-root && pip install --no-cache-dir gunicorn
+RUN poetry config virtualenvs.create false && poetry install --only main --no-root && pip install --no-cache-dir {{ .wsgi_server }}
 {{ else }}
 RUN pip install --no-cache-dir pipenv
 COPY Pipfile Pipfile.lock* ./
-RUN pipenv install --system --deploy && pip install --no-cache-dir gunicorn
+RUN pipenv install --system --deploy && pip install --no-cache-dir {{ .wsgi_server }}
 {{ end }}
 
 COPY . .
@@ -25,4 +25,8 @@ USER app
 
 EXPOSE {{ .app_port }}
 
-CMD ["gunicorn", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "4", "{{ .app_module }}"]
+{{ if eq .wsgi_server "gunicorn" }}
+CMD ["gunicorn", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "{{ .workers }}", "{{ .app_module }}"]
+{{ else }}
+CMD ["waitress-serve", "--host", "0.0.0.0", "--port", "{{ .app_port }}", "--call", "{{ .app_module }}"]
+{{ end }}

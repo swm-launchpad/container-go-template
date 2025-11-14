@@ -3,7 +3,7 @@
     "backend"
   ],
   "description": "Python Flask 경량 웹 프레임워크",
-  "display_order": 13,
+  "display_order": 10,
   "icon_name": "flask",
   "name": "Flask",
   "requires_git": true,

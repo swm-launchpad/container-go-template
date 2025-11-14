@@ -50,22 +50,65 @@ jobs:
             exit 1
           fi
 
-          CHANGED_DIRS=$(git diff --name-only $BASE_SHA $HEAD_SHA | \
-            grep '^templates/' | \
-            cut -d'/' -f1,2 | \
-            sort -u || true)
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA || true)
 
-          if [ -z "$CHANGED_DIRS" ]; then
+          # 1. templates/ 직접 변경
+          TEMPLATE_CHANGES=$(echo "$CHANGED_FILES" | grep '^templates/' | cut -d'/' -f2 | sort -u || true)
+
+          # 2. test-projects/ 변경 → mappings.json에서 실제 템플릿 키 찾기
+          TEST_PROJECT_CHANGES=$(echo "$CHANGED_FILES" | grep '^test-projects/' | grep -v '^test-projects/mappings.json' || true)
+          if [ -n "$TEST_PROJECT_CHANGES" ]; then
+            # Create path -> template mapping from mappings.json
+            PATH_TO_TEMPLATE=$(cat test-projects/mappings.json | jq -r '
+              to_entries[] |
+              (
+                if .value.test_projects then
+                  .value.test_projects[] | (.path + " " + .key)
+                elif .value.test_project then
+                  .value.test_project + " " + .key
+                else empty end
+              )
+            ')
+
+            # Find which templates are affected by changed files
+            AFFECTED_TEMPLATES=""
+            while IFS= read -r changed_file; do
+              while IFS=' ' read -r test_path template_key; do
+                if [[ "$changed_file" == "$test_path"* ]]; then
+                  AFFECTED_TEMPLATES=$(echo -e "$AFFECTED_TEMPLATES\n$template_key")
+                fi
+              done <<< "$PATH_TO_TEMPLATE"
+            done <<< "$TEST_PROJECT_CHANGES"
+
+            AFFECTED_TEMPLATES=$(echo "$AFFECTED_TEMPLATES" | grep -v '^$' | sort -u)
+            TEMPLATE_CHANGES=$(echo -e "$TEMPLATE_CHANGES\n$AFFECTED_TEMPLATES" | grep -v '^$' | sort -u)
+          fi
+
+          # 3. scripts/ 변경 → 모든 템플릿 검증
+          SCRIPTS_CHANGED=$(echo "$CHANGED_FILES" | grep '^scripts/' || true)
+          if [ -n "$SCRIPTS_CHANGED" ]; then
+            echo "Scripts changed - validating all templates"
+            TEMPLATE_CHANGES=$(cat test-projects/mappings.json | jq -r 'keys[]' | sort)
+          fi
+
+          # 4. test-projects/mappings.json 변경 → 모든 템플릿 검증
+          MAPPINGS_CHANGED=$(echo "$CHANGED_FILES" | grep '^test-projects/mappings.json$' || true)
+          if [ -n "$MAPPINGS_CHANGED" ]; then
+            echo "Mappings file changed - validating all templates"
+            TEMPLATE_CHANGES=$(cat test-projects/mappings.json | jq -r 'keys[]' | sort)
+          fi
+
+          if [ -z "$TEMPLATE_CHANGES" ]; then
             echo "changed_templates=[]" >> $GITHUB_OUTPUT
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            CHANGED_JSON=$(echo "$CHANGED_DIRS" | jq -R -s -c 'split("\n") | map(select(length > 0)) | map("../" + .)')
+            CHANGED_JSON=$(echo "$TEMPLATE_CHANGES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
             echo "changed_templates=$CHANGED_JSON" >> $GITHUB_OUTPUT
             echo "has_changes=true" >> $GITHUB_OUTPUT
 
             echo "### Changed Templates" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "$CHANGED_DIRS" >> $GITHUB_STEP_SUMMARY
+            echo "$TEMPLATE_CHANGES" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
 
@@ -73,16 +116,58 @@ jobs:
         if: steps.changed.outputs.has_changes == 'true'
         run: |
           cd scripts
+
+          # Convert template names to paths for migration validator
+          CHANGED_PATHS=$(echo '${{ steps.changed.outputs.changed_templates }}' | \
+            jq -c 'map("../templates/" + .)')
+
           go run generate-migration.go \
-            --changed '${{ steps.changed.outputs.changed_templates }}' \
+            --changed "$CHANGED_PATHS" \
             --validate-only
+
+      - name: Validate template rendering
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          cd scripts
+
+          # Convert template names array to comma-separated list
+          CHANGED_TEMPLATES=$(echo '${{ steps.changed.outputs.changed_templates }}' | \
+            jq -r '.[]' | \
+            paste -sd ',' -)
+
+          echo "Testing template rendering for: $CHANGED_TEMPLATES"
+          go run validate-templates.go \
+            --templates "$CHANGED_TEMPLATES" \
+            --skip-build
+
+      - name: Docker build and runtime validation (changed templates)
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          cd scripts
+
+          # Convert template names array to comma-separated list
+          CHANGED_TEMPLATES=$(echo '${{ steps.changed.outputs.changed_templates }}' | \
+            jq -r '.[]' | \
+            paste -sd ',' -)
+
+          echo "Testing Docker builds and runtime for: $CHANGED_TEMPLATES"
+          go run validate-templates.go \
+            --templates "$CHANGED_TEMPLATES" \
+            --run-test \
+            --timeout 20m \
+            --verbose
 
       - name: Test migration generation
         if: steps.changed.outputs.has_changes == 'true'
         run: |
           cd scripts
+
+          # Convert template names to paths for migration generator
+          CHANGED_PATHS=$(echo '${{ steps.changed.outputs.changed_templates }}' | \
+            jq -c 'map("../templates/" + .)')
+
           go run generate-migration.go \
-            --changed '${{ steps.changed.outputs.changed_templates }}' \
+            --changed "$CHANGED_PATHS" \
             --output /tmp/test-migration.sql \
             --version test-${{ github.event.pull_request.number }}
 

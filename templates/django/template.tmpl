@@ -4,15 +4,15 @@ WORKDIR /app
 
 {{ if eq .dependency_manager "pip" }}
 COPY requirements.txt ./
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir --user -r requirements.txt {{ .wsgi_server }}
 {{ else if eq .dependency_manager "poetry" }}
 RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock* ./
-RUN poetry config virtualenvs.create false && poetry install --no-dev --no-root
+RUN poetry config virtualenvs.create false && poetry install --only main --no-root && pip install --no-cache-dir {{ .wsgi_server }}
 {{ else }}
 RUN pip install --no-cache-dir pipenv
 COPY Pipfile Pipfile.lock* ./
-RUN pipenv install --system --deploy
+RUN pipenv install --system --deploy && pip install --no-cache-dir {{ .wsgi_server }}
 {{ end }}
 
 FROM python:{{ .python_version }}-slim
@@ -20,8 +20,7 @@ FROM python:{{ .python_version }}-slim
 WORKDIR /app
 
 {{ if eq .dependency_manager "pip" }}
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+COPY --from=builder /root/.local /usr/local
 {{ else if eq .dependency_manager "poetry" }}
 COPY --from=builder /usr/local/lib/python{{ .python_version }}/site-packages /usr/local/lib/python{{ .python_version }}/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
@@ -43,4 +42,8 @@ USER app
 
 EXPOSE {{ .app_port }}
 
-CMD ["gunicorn", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "4", "{{ .wsgi_module }}"]
+{{ if eq .wsgi_server "gunicorn" }}
+CMD ["gunicorn", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "{{ .workers }}", "{{ .wsgi_module }}"]
+{{ else }}
+CMD ["uwsgi", "--http", "0.0.0.0:{{ .app_port }}", "--module", "{{ .wsgi_module }}", "--processes", "{{ .workers }}", "--master"]
+{{ end }}

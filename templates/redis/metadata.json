@@ -3,7 +3,7 @@
     "database"
   ],
   "description": "Redis 인메모리 데이터 스토어",
-  "display_order": 22,
+  "display_order": 15,
   "icon_name": "redis",
   "name": "Redis",
   "requires_git": false,

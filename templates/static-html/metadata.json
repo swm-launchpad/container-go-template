@@ -3,7 +3,7 @@
     "frontend"
   ],
   "description": "정적 HTML/CSS/JS 웹사이트",
-  "display_order": 9,
+  "display_order": 4,
   "icon_name": "nginx",
   "name": "Static HTML",
   "requires_git": true,

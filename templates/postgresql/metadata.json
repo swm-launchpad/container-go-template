@@ -3,7 +3,7 @@
     "database"
   ],
   "description": "PostgreSQL 템플릿",
-  "display_order": 0,
+  "display_order": 13,
   "icon_name": "postgresql",
   "name": "PostgreSQL",
   "requires_git": false,
