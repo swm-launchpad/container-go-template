@@ -19,7 +19,8 @@
         "21"
       ],
       "type": "select",
-      "category": "required"
+      "category": "required",
+      "description": "Kotlin은 JVM에서 실행되므로 Java 런타임 버전이 필요합니다. Kotlin 버전은 build.gradle.kts에서 설정하세요."
     },
     {
       "default": "8.5",
