@@ -1,4 +1,8 @@
+{{ if eq .package_manager "bun" }}
+FROM oven/bun:1-alpine
+{{ else }}
 FROM node:{{ .node_version }}-alpine
+{{ end }}
 
 WORKDIR /app
 
@@ -6,9 +10,11 @@ WORKDIR /app
 COPY package*.json ./
 {{ else if eq .package_manager "yarn" }}
 COPY package.json yarn.lock* ./
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm
+{{ else }}
+COPY package.json bun.lockb* ./
 {{ end }}
 
 {{ if eq .build_mode "production" }}
@@ -16,16 +22,20 @@ RUN npm install -g pnpm
 RUN npm install --only=production --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
 RUN yarn install --production
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 RUN pnpm install --prod
+{{ else }}
+RUN bun install --production --frozen-lockfile
 {{ end }}
 {{ else }}
 {{ if eq .package_manager "npm" }}
 RUN npm install --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
 RUN yarn install
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 RUN pnpm install
+{{ else }}
+RUN bun install --frozen-lockfile
 {{ end }}
 {{ end }}
 
@@ -46,5 +56,9 @@ CMD ["pm2-runtime", "start", "{{ .entry_file }}", "--name", "express-app"]
 {{ else if eq .process_manager "nodemon" }}
 CMD ["nodemon", "{{ .entry_file }}"]
 {{ else }}
+{{ if eq .package_manager "bun" }}
+CMD ["bun", "run", "{{ .entry_file }}"]
+{{ else }}
 CMD ["node", "{{ .entry_file }}"]
+{{ end }}
 {{ end }}
