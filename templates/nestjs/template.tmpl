@@ -17,7 +17,7 @@ COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm && pnpm install
 {{ else }}
 COPY package.json bun.lockb* ./
-RUN bun install --frozen-lockfile
+RUN bun install
 {{ end }}
 
 COPY . .
@@ -51,7 +51,7 @@ COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm && pnpm install --prod
 {{ else }}
 COPY package.json bun.lockb* ./
-RUN bun install --production --frozen-lockfile
+RUN bun install --production
 {{ end }}
 
 COPY --from=builder /app/dist ./dist

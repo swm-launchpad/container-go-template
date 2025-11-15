@@ -25,7 +25,7 @@ RUN yarn install --production
 {{ else if eq .package_manager "pnpm" }}
 RUN pnpm install --prod
 {{ else }}
-RUN bun install --production --frozen-lockfile
+RUN bun install --production
 {{ end }}
 {{ else }}
 {{ if eq .package_manager "npm" }}
@@ -35,7 +35,7 @@ RUN yarn install
 {{ else if eq .package_manager "pnpm" }}
 RUN pnpm install
 {{ else }}
-RUN bun install --frozen-lockfile
+RUN bun install
 {{ end }}
 {{ end }}
 
