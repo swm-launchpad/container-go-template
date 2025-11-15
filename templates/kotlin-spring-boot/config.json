@@ -44,12 +44,5 @@
       "type": "select",
       "category": "optional"
     }
-  ],
-  "template_ports": [
-    {
-      "description": "Spring Boot server port",
-      "internal_port": 8080,
-      "network_type": "http"
-    }
   ]
 }

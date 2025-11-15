@@ -63,12 +63,5 @@
       "category": "optional",
       "description": "Nginx 서버가 실행될 포트 번호. 네트워크 포트와 자동으로 동기화됩니다."
     }
-  ],
-  "template_ports": [
-    {
-      "description": "Vue.js HTTP port",
-      "internal_port": 80,
-      "network_type": "http"
-    }
   ]
 }

@@ -39,12 +39,5 @@
       "type": "select",
       "category": "required"
     }
-  ],
-  "template_ports": [
-    {
-      "description": "NestJS HTTP port",
-      "internal_port": 3000,
-      "network_type": "http"
-    }
   ]
 }

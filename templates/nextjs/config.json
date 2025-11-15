@@ -39,12 +39,5 @@
       "type": "select",
       "category": "required"
     }
-  ],
-  "template_ports": [
-    {
-      "description": "Next.js server port",
-      "internal_port": 3000,
-      "network_type": "http"
-    }
   ]
 }

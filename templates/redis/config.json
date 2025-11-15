@@ -61,13 +61,6 @@
       "description": "메모리 한계 도달 시 키 제거 정책. LRU: 최근 사용, LFU: 사용 빈도."
     }
   ],
-  "template_ports": [
-    {
-      "description": "Redis port",
-      "internal_port": 6379,
-      "network_type": "tcp"
-    }
-  ],
   "template_volumes": [
     {
       "mount_path": "/data",

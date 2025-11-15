@@ -101,13 +101,6 @@
       "description": "정렬 및 해시 테이블 작업에 사용되는 메모리."
     }
   ],
-  "template_ports": [
-    {
-      "description": "PostgreSQL port",
-      "internal_port": 5432,
-      "network_type": "tcp"
-    }
-  ],
   "template_volumes": [
     {
       "mount_path": "/var/lib/postgresql/data",

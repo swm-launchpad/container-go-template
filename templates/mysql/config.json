@@ -108,13 +108,6 @@
       "description": "클라이언트와 서버 간 전송 가능한 최대 패킷 크기. 큰 데이터 처리 시 증가 필요."
     }
   ],
-  "template_ports": [
-    {
-      "description": "MySQL port",
-      "internal_port": 3306,
-      "network_type": "tcp"
-    }
-  ],
   "template_volumes": [
     {
       "mount_path": "/var/lib/mysql",

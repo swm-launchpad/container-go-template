@@ -78,12 +78,5 @@
       "category": "advanced",
       "description": "프로덕션: pm2 권장, 개발: nodemon 권장"
     }
-  ],
-  "template_ports": [
-    {
-      "description": "Express.js HTTP port",
-      "internal_port": 3000,
-      "network_type": "http"
-    }
   ]
 }
