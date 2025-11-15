@@ -15,8 +15,10 @@
       "label": "Java 버전",
       "name": "java_version",
       "options": [
+        "11",
         "17",
-        "21"
+        "21",
+        "25"
       ],
       "type": "select",
       "category": "required",

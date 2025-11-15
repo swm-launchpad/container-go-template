@@ -26,14 +26,15 @@
   ],
   "template_options": [
     {
-      "default": "16",
+      "default": "17",
       "label": "PostgreSQL 버전",
       "name": "version",
       "options": [
         "14",
         "15",
         "16",
-        "17"
+        "17",
+        "18"
       ],
       "type": "select",
       "category": "required"

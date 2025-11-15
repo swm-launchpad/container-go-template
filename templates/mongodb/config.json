@@ -22,12 +22,13 @@
   ],
   "template_options": [
     {
-      "default": "7.0",
+      "default": "8.0",
       "label": "MongoDB 버전",
       "name": "mongo_version",
       "options": [
         "6.0",
-        "7.0"
+        "7.0",
+        "8.0"
       ],
       "type": "select",
       "category": "required"

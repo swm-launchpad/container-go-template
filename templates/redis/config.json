@@ -18,12 +18,14 @@
   ],
   "template_options": [
     {
-      "default": "7.2",
+      "default": "8.0",
       "label": "Redis 버전",
       "name": "redis_version",
       "options": [
         "7.0",
-        "7.2"
+        "7.2",
+        "8.0",
+        "8.2"
       ],
       "type": "select",
       "category": "required"

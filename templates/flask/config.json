@@ -22,14 +22,15 @@
   ],
   "template_options": [
     {
-      "default": "3.11",
+      "default": "3.12",
       "label": "Python 버전",
       "name": "python_version",
       "options": [
-        "3.9",
         "3.10",
         "3.11",
-        "3.12"
+        "3.12",
+        "3.13",
+        "3.14"
       ],
       "type": "select",
       "category": "required"
