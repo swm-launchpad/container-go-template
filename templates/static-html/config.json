@@ -1,8 +1,8 @@
 {
   "default_resources": {
-    "default_cpu": 500,
+    "default_cpu": 256,
     "default_memory": 128,
-    "min_recommended_memory": 128
+    "min_recommended_memory": 64
   },
   "default_env": [],
   "default_ports": [

@@ -2,7 +2,7 @@
   "default_resources": {
     "default_cpu": 256,
     "default_memory": 256,
-    "min_recommended_memory": 128
+    "min_recommended_memory": 256
   },
   "default_env": [
     {
