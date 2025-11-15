@@ -58,4 +58,8 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
+{{ if eq .package_manager "bun" }}
+CMD ["bun", "run", "dist/main"]
+{{ else }}
 CMD ["node", "dist/main"]
+{{ end }}
