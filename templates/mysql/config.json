@@ -65,9 +65,9 @@
       "description": "MySQL root 계정 비밀번호. 보안을 위해 필수로 설정해야 합니다."
     },
     {
-      "default": "",
-      "label": "애플리케이션 사용자명 (선택사항)",
+      "label": "애플리케이션 사용자명",
       "name": "app_username",
+      "default": "",
       "options": [],
       "type": "text",
       "category": "optional",
@@ -75,7 +75,7 @@
     },
     {
       "default": "",
-      "label": "애플리케이션 비밀번호 (선택사항)",
+      "label": "애플리케이션 비밀번호",
       "name": "app_password",
       "options": [],
       "type": "password",
