@@ -36,3 +36,4 @@ tmp/
 # Generated migration files (local testing)
 /migrations/
 *.sql
+scripts/.cache/

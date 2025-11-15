@@ -1,0 +1,8 @@
+[project]
+name = "fastapi-uv-test"
+version = "0.1.0"
+description = "FastAPI test project with uv dependency manager"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.100.0",
+]
