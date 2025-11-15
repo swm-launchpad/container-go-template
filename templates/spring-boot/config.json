@@ -17,8 +17,7 @@
       "options": [
         "11",
         "17",
-        "21",
-        "25"
+        "21"
       ],
       "type": "select",
       "category": "required"
