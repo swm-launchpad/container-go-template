@@ -1,8 +1,8 @@
 {
   "default_resources": {
     "default_cpu": 500,
-    "default_memory": 512,
-    "min_recommended_memory": 512
+    "default_memory": 256,
+    "min_recommended_memory": 256
   },
   "default_env": [
     {
@@ -16,13 +16,14 @@
   },
   "template_options": [
     {
-      "default": "20",
+      "default": "24",
       "label": "Node.js 버전",
       "name": "node_version",
       "options": [
         "18",
         "20",
-        "22"
+        "22",
+        "24"
       ],
       "type": "select",
       "category": "required"

@@ -2,7 +2,7 @@
   "default_resources": {
     "default_cpu": 512,
     "default_memory": 512,
-    "min_recommended_memory": 256
+    "min_recommended_memory": 512
   },
   "default_env": [
     {
@@ -22,12 +22,13 @@
   ],
   "template_options": [
     {
-      "default": "7.0",
+      "default": "8.0",
       "label": "MongoDB 버전",
       "name": "mongo_version",
       "options": [
         "6.0",
-        "7.0"
+        "7.0",
+        "8.0"
       ],
       "type": "select",
       "category": "required"

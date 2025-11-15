@@ -18,13 +18,14 @@
   ],
   "template_options": [
     {
-      "default": "20",
+      "default": "24",
       "label": "Node.js 버전",
       "name": "node_version",
       "options": [
         "18",
         "20",
-        "22"
+        "22",
+        "24"
       ],
       "type": "select",
       "category": "required"

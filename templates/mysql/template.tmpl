@@ -16,10 +16,10 @@ RUN echo "[mysqld]" > /etc/mysql/conf.d/custom.cnf && \
     echo "innodb_buffer_pool_size={{ .innodb_buffer_pool_size }}" >> /etc/mysql/conf.d/custom.cnf{{ end }}{{ if .max_allowed_packet }} && \
     echo "max_allowed_packet={{ .max_allowed_packet }}" >> /etc/mysql/conf.d/custom.cnf{{ end }}
 
-{{ if and .app_username .app_password -}}
-ENV MYSQL_USER={{ .app_username }}
-ENV MYSQL_PASSWORD={{ .app_password }}
-{{- end }}
+{{ with .app_username }}{{ with $.app_password -}}
+ENV MYSQL_USER={{ $.app_username }}
+ENV MYSQL_PASSWORD={{ $.app_password }}
+{{- end }}{{ end }}
 
 EXPOSE 3306
 
