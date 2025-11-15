@@ -44,7 +44,8 @@
         "latin1"
       ],
       "type": "select",
-      "category": "required"
+      "category": "advanced",
+      "description": "데이터베이스 문자 인코딩. 대부분의 경우 utf8mb4(완전한 UTF-8) 사용을 권장합니다."
     },
     {
       "default": "",
