@@ -12,7 +12,8 @@ RUN poetry config virtualenvs.create false && poetry install --only main --no-ro
 {{ else if eq .dependency_manager "uv" }}
 RUN pip install --no-cache-dir uv
 COPY pyproject.toml uv.lock* ./
-RUN uv sync --frozen --no-dev && pip install --no-cache-dir {{ .asgi_server }}
+RUN uv pip install --system --no-cache-dir . && \
+    uv pip install --system --no-cache-dir {{ .asgi_server }}
 {{ else }}
 RUN pip install --no-cache-dir pipenv
 COPY Pipfile Pipfile.lock* ./
