@@ -33,12 +33,12 @@ RUN chown spring:spring app.jar
 
 USER spring
 
-EXPOSE {{ .app_port }}
-
 ENV SPRING_PROFILES_ACTIVE={{ .spring_profile }}
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
 
+EXPOSE 8080
+
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:{{ .app_port }}/actuator/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

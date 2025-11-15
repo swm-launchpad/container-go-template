@@ -16,10 +16,9 @@ RUN echo "[mysqld]" > /etc/mysql/conf.d/custom.cnf && \
     echo "innodb_buffer_pool_size={{ .innodb_buffer_pool_size }}" >> /etc/mysql/conf.d/custom.cnf{{ end }}{{ if .max_allowed_packet }} && \
     echo "max_allowed_packet={{ .max_allowed_packet }}" >> /etc/mysql/conf.d/custom.cnf{{ end }}
 
-{{ if and .database_name .user_username .user_password -}}
-RUN echo "CREATE USER IF NOT EXISTS '{{ .user_username }}'@'%' IDENTIFIED BY '{{ .user_password }}';" > /docker-entrypoint-initdb.d/01-create-user.sql && \
-    echo "GRANT ALL PRIVILEGES ON \`{{ .database_name }}\`.* TO '{{ .user_username }}'@'%';" >> /docker-entrypoint-initdb.d/01-create-user.sql && \
-    echo "FLUSH PRIVILEGES;" >> /docker-entrypoint-initdb.d/01-create-user.sql
+{{ if and .app_username .app_password -}}
+ENV MYSQL_USER={{ .app_username }}
+ENV MYSQL_PASSWORD={{ .app_password }}
 {{- end }}
 
 EXPOSE 3306

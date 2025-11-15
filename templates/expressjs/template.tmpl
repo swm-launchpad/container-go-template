@@ -11,7 +11,7 @@ COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm
 {{ end }}
 
-{{ if eq .node_env "production" }}
+{{ if eq .build_mode "production" }}
 {{ if eq .package_manager "npm" }}
 RUN npm install --only=production --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
@@ -37,7 +37,9 @@ RUN npm install -g nodemon
 
 COPY . .
 
-EXPOSE {{ .app_port }}
+ENV NODE_ENV={{ .build_mode }}
+
+EXPOSE 3000
 
 {{ if eq .process_manager "pm2" }}
 CMD ["pm2-runtime", "start", "{{ .entry_file }}", "--name", "express-app"]

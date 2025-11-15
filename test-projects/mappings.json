@@ -8,7 +8,8 @@
         "options": {
           "node_version": "20",
           "package_manager": "npm",
-          "build_output": "dist"
+          "build_output": "dist",
+          "app_port": "80"
         }
       },
       {
@@ -17,7 +18,8 @@
         "options": {
           "node_version": "20",
           "package_manager": "yarn",
-          "build_output": "dist"
+          "build_output": "dist",
+          "app_port": "80"
         }
       },
       {
@@ -26,7 +28,8 @@
         "options": {
           "node_version": "20",
           "package_manager": "pnpm",
-          "build_output": "dist"
+          "build_output": "dist",
+          "app_port": "80"
         }
       }
     ]
@@ -40,7 +43,8 @@
         "options": {
           "node_version": "20",
           "package_manager": "npm",
-          "build_output": "dist"
+          "build_output": "dist",
+          "app_port": "80"
         }
       },
       {
@@ -49,7 +53,8 @@
         "options": {
           "node_version": "20",
           "package_manager": "yarn",
-          "build_output": "dist"
+          "build_output": "dist",
+          "app_port": "80"
         }
       },
       {
@@ -58,7 +63,8 @@
         "options": {
           "node_version": "20",
           "package_manager": "pnpm",
-          "build_output": "dist"
+          "build_output": "dist",
+          "app_port": "80"
         }
       }
     ]
@@ -99,7 +105,8 @@
     "template": "templates/static-html",
     "test_project": "test-projects/frontend/static-html",
     "default_options": {
-      "nginx_version": "1.26"
+      "nginx_version": "1.26",
+      "app_port": "80"
     }
   },
   "expressjs": {
@@ -111,7 +118,7 @@
         "options": {
           "node_version": "20",
           "package_manager": "npm",
-          "node_env": "production",
+          "build_mode": "production",
           "process_manager": "pm2",
           "app_port": "3000",
           "entry_file": "index.js"
@@ -123,7 +130,7 @@
         "options": {
           "node_version": "20",
           "package_manager": "yarn",
-          "node_env": "development",
+          "build_mode": "development",
           "process_manager": "nodemon",
           "app_port": "3000",
           "entry_file": "index.js"
@@ -135,7 +142,7 @@
         "options": {
           "node_version": "20",
           "package_manager": "npm",
-          "node_env": "production",
+          "build_mode": "production",
           "process_manager": "none",
           "app_port": "3000",
           "entry_file": "index.js"
@@ -147,7 +154,7 @@
         "options": {
           "node_version": "20",
           "package_manager": "pnpm",
-          "node_env": "production",
+          "build_mode": "production",
           "process_manager": "pm2",
           "app_port": "3000",
           "entry_file": "index.js"
@@ -159,7 +166,7 @@
         "options": {
           "node_version": "20",
           "package_manager": "pnpm",
-          "node_env": "development",
+          "build_mode": "development",
           "process_manager": "nodemon",
           "app_port": "3000",
           "entry_file": "index.js"
@@ -171,7 +178,7 @@
         "options": {
           "node_version": "20",
           "package_manager": "pnpm",
-          "node_env": "production",
+          "build_mode": "production",
           "process_manager": "none",
           "app_port": "3000",
           "entry_file": "index.js"
@@ -396,8 +403,8 @@
       "shared_buffers": "128MB",
       "postgres_password": "",
       "database_name": "myapp",
-      "user_username": "",
-      "user_password": "",
+      "superuser_username": "",
+      "superuser_password": "",
       "effective_cache_size": "4GB",
       "work_mem": "4MB"
     }
@@ -407,13 +414,11 @@
     "test_project": "test-projects/database/mongodb",
     "default_options": {
       "mongo_version": "7.0",
-      "mongo_port": "27017",
-      "root_username": "",
-      "root_password": "",
-      "database_name": "",
-      "user_username": "",
-      "user_password": "",
-      "wiredtiger_cache_size": "1GB"
+      "root_username": "admin",
+      "root_password": "testpass",
+      "database_name": "testdb",
+      "app_username": "",
+      "app_password": ""
     }
   },
   "redis": {
@@ -421,8 +426,7 @@
     "test_project": "test-projects/database/redis",
     "default_options": {
       "redis_version": "7.2",
-      "redis_port": "6379",
-      "redis_password": "",
+      "redis_password": "testpass",
       "maxmemory": "",
       "maxmemory_policy": "allkeys-lru"
     }

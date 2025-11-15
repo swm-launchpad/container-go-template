@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 512,
+    "default_memory": 512,
+    "min_recommended_memory": 256
+  },
   "default_env": [
     {
       "key": "MONGO_INITDB_ROOT_USERNAME",
@@ -28,68 +33,47 @@
       "category": "required"
     },
     {
-      "default": "27017",
-      "label": "MongoDB 포트",
-      "name": "mongo_port",
-      "options": [],
-      "type": "number",
-      "category": "optional"
-    },
-    {
-      "default": "",
       "label": "데이터베이스명",
       "name": "database_name",
       "options": [],
       "type": "text",
-      "category": "optional"
+      "category": "required",
+      "description": "초기 생성할 데이터베이스명. MONGO_INITDB_DATABASE 환경변수로 설정됩니다."
     },
     {
-      "default": "",
+      "default": "admin",
       "label": "Root 사용자명",
       "name": "root_username",
       "options": [],
       "type": "text",
-      "category": "optional"
+      "category": "required",
+      "description": "MongoDB root 계정명. 기본값은 'admin'입니다."
     },
     {
-      "default": "",
       "label": "Root 비밀번호",
       "name": "root_password",
       "options": [],
       "type": "password",
-      "category": "optional"
+      "category": "required",
+      "description": "MongoDB root 계정 비밀번호. 보안을 위해 필수로 설정해야 합니다."
     },
     {
       "default": "",
-      "label": "애플리케이션 사용자명",
-      "name": "user_username",
+      "label": "애플리케이션 사용자명 (선택사항)",
+      "name": "app_username",
       "options": [],
       "type": "text",
-      "category": "optional"
+      "category": "optional",
+      "description": "애플리케이션용 별도 계정명. 설정 시 비밀번호도 함께 입력해야 하며, 지정된 데이터베이스에 대한 읽기/쓰기 권한이 부여됩니다."
     },
     {
       "default": "",
-      "label": "애플리케이션 비밀번호",
-      "name": "user_password",
+      "label": "애플리케이션 비밀번호 (선택사항)",
+      "name": "app_password",
       "options": [],
       "type": "password",
-      "category": "optional"
-    },
-    {
-      "default": "1GB",
-      "label": "WiredTiger 캐시 크기",
-      "name": "wiredtiger_cache_size",
-      "options": [],
-      "type": "text",
-      "category": "advanced",
-      "description": "WiredTiger 스토리지 엔진의 캐시 크기. 전체 메모리의 50% 권장."
-    }
-  ],
-  "template_ports": [
-    {
-      "description": "MongoDB port",
-      "internal_port": 27017,
-      "network_type": "tcp"
+      "category": "optional",
+      "description": "애플리케이션 계정의 비밀번호. 사용자명과 함께 설정 시 Init 스크립트를 통해 계정이 생성됩니다."
     }
   ],
   "template_volumes": [

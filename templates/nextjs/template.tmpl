@@ -54,7 +54,7 @@ COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
 
-EXPOSE {{ .app_port }}
+EXPOSE 3000
 
 {{ if eq .package_manager "npm" }}
 CMD ["npm", "start"]

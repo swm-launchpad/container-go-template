@@ -1,20 +1,19 @@
 {
+  "default_resources": {
+    "default_cpu": 500,
+    "default_memory": 512,
+    "min_recommended_memory": 512
+  },
   "default_env": [
     {
       "key": "NODE_ENV",
       "value": "production"
-    },
-    {
-      "key": "PORT",
-      "value": "3000"
     }
   ],
-  "default_ports": [
-    {
-      "internal_port": 3000,
-      "network_type": "http"
-    }
-  ],
+  "port_guide": {
+    "default_port": 3000,
+    "description": "Express.js는 일반적으로 3000번 포트를 사용합니다. 코드에서 설정한 포트(app.listen 또는 process.env.PORT)에 맞게 네트워크 포트를 추가하세요."
+  },
   "template_options": [
     {
       "default": "20",
@@ -42,30 +41,29 @@
     },
     {
       "default": "production",
-      "label": "Node 환경",
-      "name": "node_env",
+      "label": "빌드 모드",
+      "name": "build_mode",
       "options": [
         "development",
         "production"
       ],
       "type": "select",
-      "category": "optional"
+      "category": "optional",
+      "description": "의존성 설치 모드. production: 프로덕션 의존성만 설치, development: 모든 의존성 설치 (devDependencies 포함)"
     },
     {
-      "default": "3000",
-      "label": "애플리케이션 포트",
-      "name": "app_port",
-      "options": [],
-      "type": "number",
-      "category": "optional"
-    },
-    {
-      "default": "index.js",
       "label": "진입 파일",
       "name": "entry_file",
-      "options": [],
-      "type": "text",
-      "category": "optional"
+      "options": [
+        "index.js",
+        "server.js",
+        "app.js"
+      ],
+      "type": "select",
+      "category": "required",
+      "allow_custom": true,
+      "custom_label": "기타(직접 입력)",
+      "description": "Express 서버가 시작되는 파일명을 선택하세요. package.json의 'main' 필드나 start 스크립트를 확인하세요."
     },
     {
       "default": "none",
@@ -79,13 +77,6 @@
       "type": "select",
       "category": "advanced",
       "description": "프로덕션: pm2 권장, 개발: nodemon 권장"
-    }
-  ],
-  "template_ports": [
-    {
-      "description": "Express.js HTTP port",
-      "internal_port": 3000,
-      "network_type": "http"
     }
   ]
 }

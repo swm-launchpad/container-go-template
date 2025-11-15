@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 512,
+    "default_memory": 512,
+    "min_recommended_memory": 256
+  },
   "default_env": [
     {
       "key": "MYSQL_ROOT_PASSWORD",
@@ -42,35 +47,38 @@
     },
     {
       "default": "",
-      "label": "Root 비밀번호",
-      "name": "root_password",
-      "options": [],
-      "type": "password",
-      "category": "required"
-    },
-    {
-      "default": "",
       "label": "데이터베이스명",
       "name": "database_name",
       "options": [],
       "type": "text",
-      "category": "optional"
+      "category": "required",
+      "description": "초기 생성할 데이터베이스명. MYSQL_DATABASE 환경변수로 설정됩니다."
     },
     {
-      "default": "",
-      "label": "애플리케이션 사용자명",
-      "name": "user_username",
-      "options": [],
-      "type": "text",
-      "category": "optional"
-    },
-    {
-      "default": "",
-      "label": "애플리케이션 비밀번호",
-      "name": "user_password",
+      "label": "Root 비밀번호",
+      "name": "root_password",
       "options": [],
       "type": "password",
-      "category": "optional"
+      "category": "required",
+      "description": "MySQL root 계정 비밀번호. 보안을 위해 필수로 설정해야 합니다."
+    },
+    {
+      "default": "",
+      "label": "애플리케이션 사용자명 (선택사항)",
+      "name": "app_username",
+      "options": [],
+      "type": "text",
+      "category": "optional",
+      "description": "애플리케이션용 별도 계정명. 설정 시 비밀번호도 함께 입력해야 합니다."
+    },
+    {
+      "default": "",
+      "label": "애플리케이션 비밀번호 (선택사항)",
+      "name": "app_password",
+      "options": [],
+      "type": "password",
+      "category": "optional",
+      "description": "애플리케이션 계정의 비밀번호. 사용자명과 함께 설정 시 해당 데이터베이스에 대한 전체 권한이 부여됩니다."
     },
     {
       "default": "151",
@@ -98,13 +106,6 @@
       "type": "text",
       "category": "advanced",
       "description": "클라이언트와 서버 간 전송 가능한 최대 패킷 크기. 큰 데이터 처리 시 증가 필요."
-    }
-  ],
-  "template_ports": [
-    {
-      "description": "MySQL port",
-      "internal_port": 3306,
-      "network_type": "tcp"
     }
   ],
   "template_volumes": [

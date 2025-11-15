@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 256,
+    "default_memory": 128,
+    "min_recommended_memory": 64
+  },
   "default_env": [
     {
       "key": "NODE_ENV",
@@ -37,19 +42,26 @@
       "category": "required"
     },
     {
-      "default": "dist",
       "label": "빌드 출력 디렉토리",
       "name": "build_output",
-      "options": [],
-      "type": "text",
-      "category": "optional"
-    }
-  ],
-  "template_ports": [
+      "options": [
+        "dist",
+        "build"
+      ],
+      "type": "select",
+      "category": "required",
+      "allow_custom": true,
+      "custom_label": "기타(직접 입력)",
+      "description": "프로젝트의 빌드 출력 디렉토리를 선택하세요. 대부분의 Vue 프로젝트는 'dist'를 사용합니다. vite.config.js 또는 vue.config.js를 확인하세요."
+    },
     {
-      "description": "Vue.js HTTP port",
-      "internal_port": 80,
-      "network_type": "http"
+      "default": "80",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number",
+      "category": "optional",
+      "description": "Nginx 서버가 실행될 포트 번호. 네트워크 포트와 자동으로 동기화됩니다."
     }
   ]
 }

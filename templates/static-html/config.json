@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 500,
+    "default_memory": 128,
+    "min_recommended_memory": 128
+  },
   "default_env": [],
   "default_ports": [
     {
@@ -17,13 +22,15 @@
       ],
       "type": "select",
       "category": "required"
-    }
-  ],
-  "template_ports": [
+    },
     {
-      "description": "HTTP port",
-      "internal_port": 80,
-      "network_type": "http"
+      "default": "80",
+      "label": "애플리케이션 포트",
+      "name": "app_port",
+      "options": [],
+      "type": "number",
+      "category": "optional",
+      "description": "Nginx 서버가 실행될 포트 번호. 네트워크 포트와 자동으로 동기화됩니다."
     }
   ]
 }

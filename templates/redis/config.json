@@ -1,4 +1,9 @@
 {
+  "default_resources": {
+    "default_cpu": 256,
+    "default_memory": 256,
+    "min_recommended_memory": 128
+  },
   "default_env": [
     {
       "key": "REDIS_PASSWORD",
@@ -24,20 +29,12 @@
       "category": "required"
     },
     {
-      "default": "6379",
-      "label": "Redis 포트",
-      "name": "redis_port",
-      "options": [],
-      "type": "number",
-      "category": "optional"
-    },
-    {
-      "default": "",
       "label": "Redis 비밀번호",
       "name": "redis_password",
       "options": [],
       "type": "password",
-      "category": "optional"
+      "category": "required",
+      "description": "Redis 접근 비밀번호. 보안을 위해 필수로 설정해야 합니다."
     },
     {
       "default": "",
@@ -62,13 +59,6 @@
       "type": "select",
       "category": "advanced",
       "description": "메모리 한계 도달 시 키 제거 정책. LRU: 최근 사용, LFU: 사용 빈도."
-    }
-  ],
-  "template_ports": [
-    {
-      "description": "Redis port",
-      "internal_port": 6379,
-      "network_type": "tcp"
     }
   ],
   "template_volumes": [

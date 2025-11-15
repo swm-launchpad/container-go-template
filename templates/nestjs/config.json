@@ -1,20 +1,19 @@
 {
+  "default_resources": {
+    "default_cpu": 500,
+    "default_memory": 512,
+    "min_recommended_memory": 512
+  },
   "default_env": [
     {
       "key": "NODE_ENV",
       "value": "production"
-    },
-    {
-      "key": "PORT",
-      "value": "3000"
     }
   ],
-  "default_ports": [
-    {
-      "internal_port": 3000,
-      "network_type": "http"
-    }
-  ],
+  "port_guide": {
+    "default_port": 3000,
+    "description": "NestJS는 일반적으로 3000번 포트를 사용합니다. main.ts에서 설정한 포트(app.listen 또는 process.env.PORT)에 맞게 네트워크 포트를 추가하세요."
+  },
   "template_options": [
     {
       "default": "20",
@@ -39,21 +38,6 @@
       ],
       "type": "select",
       "category": "required"
-    },
-    {
-      "default": "3000",
-      "label": "애플리케이션 포트",
-      "name": "app_port",
-      "options": [],
-      "type": "number",
-      "category": "optional"
-    }
-  ],
-  "template_ports": [
-    {
-      "description": "NestJS HTTP port",
-      "internal_port": 3000,
-      "network_type": "http"
     }
   ]
 }
