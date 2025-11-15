@@ -38,6 +38,7 @@
       "options": [
         "pip",
         "poetry",
+        "uv",
         "pipenv"
       ],
       "type": "select",

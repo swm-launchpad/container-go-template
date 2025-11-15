@@ -1,4 +1,8 @@
+{{ if eq .package_manager "bun" }}
+FROM oven/bun:1-alpine AS builder
+{{ else }}
 FROM node:{{ .node_version }}-alpine AS builder
+{{ end }}
 
 WORKDIR /app
 
@@ -8,9 +12,12 @@ RUN npm install --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
 COPY package.json yarn.lock* ./
 RUN yarn install
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm && pnpm install
+{{ else }}
+COPY package.json bun.lockb* ./
+RUN bun install
 {{ end }}
 
 COPY . .
@@ -19,11 +26,17 @@ COPY . .
 RUN npm run build
 {{ else if eq .package_manager "yarn" }}
 RUN yarn build
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 RUN pnpm build
+{{ else }}
+RUN bun run build
 {{ end }}
 
+{{ if eq .package_manager "bun" }}
+FROM oven/bun:1-alpine
+{{ else }}
 FROM node:{{ .node_version }}-alpine
+{{ end }}
 
 WORKDIR /app
 
@@ -33,13 +46,20 @@ RUN npm install --only=production --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
 COPY package.json yarn.lock* ./
 RUN yarn install --production
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm && pnpm install --prod
+{{ else }}
+COPY package.json bun.lockb* ./
+RUN bun install --production
 {{ end }}
 
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
+{{ if eq .package_manager "bun" }}
+CMD ["bun", "run", "dist/main"]
+{{ else }}
 CMD ["node", "dist/main"]
+{{ end }}

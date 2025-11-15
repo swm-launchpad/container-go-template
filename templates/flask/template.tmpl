@@ -9,6 +9,11 @@ RUN pip install --no-cache-dir -r requirements.txt {{ .wsgi_server }}
 RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock* ./
 RUN poetry config virtualenvs.create false && poetry install --only main --no-root && pip install --no-cache-dir {{ .wsgi_server }}
+{{ else if eq .dependency_manager "uv" }}
+RUN pip install --no-cache-dir uv
+COPY pyproject.toml uv.lock* ./
+RUN uv pip install --system --no-cache-dir . && \
+    uv pip install --system --no-cache-dir {{ .wsgi_server }}
 {{ else }}
 RUN pip install --no-cache-dir pipenv
 COPY Pipfile Pipfile.lock* ./

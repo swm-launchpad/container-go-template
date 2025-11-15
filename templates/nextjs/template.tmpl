@@ -1,4 +1,8 @@
+{{ if eq .package_manager "bun" }}
+FROM oven/bun:1-alpine AS deps
+{{ else }}
 FROM node:{{ .node_version }}-alpine AS deps
+{{ end }}
 
 WORKDIR /app
 
@@ -8,12 +12,19 @@ RUN npm install --no-audit --prefer-offline
 {{ else if eq .package_manager "yarn" }}
 COPY package.json yarn.lock* ./
 RUN yarn install
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm && pnpm install
+{{ else }}
+COPY package.json bun.lockb* ./
+RUN bun install
 {{ end }}
 
+{{ if eq .package_manager "bun" }}
+FROM oven/bun:1-alpine AS builder
+{{ else }}
 FROM node:{{ .node_version }}-alpine AS builder
+{{ end }}
 
 WORKDIR /app
 
@@ -30,11 +41,17 @@ RUN mkdir -p public
 RUN npm run build
 {{ else if eq .package_manager "yarn" }}
 RUN yarn build
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 RUN pnpm build
+{{ else }}
+RUN bun run build
 {{ end }}
 
+{{ if eq .package_manager "bun" }}
+FROM oven/bun:1-alpine AS runner
+{{ else }}
 FROM node:{{ .node_version }}-alpine AS runner
+{{ end }}
 
 WORKDIR /app
 
@@ -50,7 +67,7 @@ RUN npm install -g pnpm
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
 USER nextjs
 
@@ -60,6 +77,8 @@ EXPOSE 3000
 CMD ["npm", "start"]
 {{ else if eq .package_manager "yarn" }}
 CMD ["yarn", "start"]
-{{ else }}
+{{ else if eq .package_manager "pnpm" }}
 CMD ["pnpm", "start"]
+{{ else }}
+CMD ["bun", "--bun", "run", "start"]
 {{ end }}

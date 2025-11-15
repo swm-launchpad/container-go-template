@@ -37,7 +37,8 @@
       "options": [
         "npm",
         "yarn",
-        "pnpm"
+        "pnpm",
+        "bun"
       ],
       "type": "select",
       "category": "required"
