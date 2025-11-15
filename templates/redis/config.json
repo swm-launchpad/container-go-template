@@ -1,6 +1,6 @@
 {
   "default_resources": {
-    "default_cpu": 256,
+    "default_cpu": 250,
     "default_memory": 256,
     "min_recommended_memory": 256
   },
