@@ -79,6 +79,34 @@
       "type": "select",
       "category": "advanced",
       "description": "프로덕션: pm2 권장, 개발: nodemon 권장"
+    },
+    {
+      "default": "cluster",
+      "label": "PM2 모드",
+      "name": "pm2_mode",
+      "options": [
+        "fork",
+        "cluster"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "description": "PM2 실행 모드. Cluster: CPU 코어 수만큼 인스턴스 생성(성능 향상), Fork: 단일 인스턴스"
+    },
+    {
+      "default": "max",
+      "label": "PM2 인스턴스 수",
+      "name": "pm2_instances",
+      "options": [
+        "1",
+        "2",
+        "4",
+        "max"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "allow_custom": true,
+      "custom_label": "기타(직접 입력)",
+      "description": "PM2 인스턴스 수. 'max'는 CPU 코어 수와 동일. Cluster 모드에서만 유효."
     }
   ]
 }
