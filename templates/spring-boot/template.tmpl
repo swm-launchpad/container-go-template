@@ -34,7 +34,7 @@ RUN chown spring:spring app.jar
 USER spring
 
 ENV SPRING_PROFILES_ACTIVE={{ .spring_profile }}
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage={{ .jvm_max_ram_percentage }}.0 -XX:InitialRAMPercentage={{ .jvm_initial_ram_percentage }}.0"
 
 EXPOSE 8080
 

@@ -66,6 +66,41 @@
       ],
       "type": "select",
       "category": "optional"
+    },
+    {
+      "default": "75",
+      "label": "JVM 최대 힙 메모리 비율",
+      "name": "jvm_max_ram_percentage",
+      "options": [
+        "50",
+        "60",
+        "70",
+        "75",
+        "80",
+        "90"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "allow_custom": true,
+      "custom_label": "기타(직접 입력)",
+      "description": "컨테이너 메모리 대비 JVM 최대 힙 메모리 비율(%). 75% 권장 (나머지는 non-heap, OS용)"
+    },
+    {
+      "default": "50",
+      "label": "JVM 초기 힙 메모리 비율",
+      "name": "jvm_initial_ram_percentage",
+      "options": [
+        "25",
+        "33",
+        "50",
+        "60",
+        "75"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "allow_custom": true,
+      "custom_label": "기타(직접 입력)",
+      "description": "컨테이너 메모리 대비 JVM 초기 힙 메모리 비율(%). 50% 권장 (빠른 시작)"
     }
   ]
 }
