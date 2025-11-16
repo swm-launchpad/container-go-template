@@ -52,7 +52,11 @@ ENV NODE_ENV={{ .build_mode }}
 EXPOSE 3000
 
 {{ if eq .process_manager "pm2" }}
+{{ if eq .pm2_mode "cluster" }}
+CMD ["pm2-runtime", "start", "{{ .entry_file }}", "--name", "express-app", "-i", "{{ .pm2_instances }}"]
+{{ else }}
 CMD ["pm2-runtime", "start", "{{ .entry_file }}", "--name", "express-app"]
+{{ end }}
 {{ else if eq .process_manager "nodemon" }}
 CMD ["nodemon", "{{ .entry_file }}"]
 {{ else }}
