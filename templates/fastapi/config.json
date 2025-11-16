@@ -74,11 +74,12 @@
       "name": "asgi_server",
       "options": [
         "uvicorn",
-        "hypercorn"
+        "hypercorn",
+        "granian"
       ],
       "type": "select",
       "category": "advanced",
-      "description": "ASGI 애플리케이션 서버. Uvicorn은 빠른 성능, Hypercorn은 HTTP/2 지원."
+      "description": "ASGI 애플리케이션 서버. Uvicorn: 빠른 성능(기본), Hypercorn: HTTP/2 지원, Granian: 최고 성능(Rust 기반)"
     },
     {
       "default": "1",
