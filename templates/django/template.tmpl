@@ -4,20 +4,81 @@ WORKDIR /app
 
 {{ if eq .dependency_manager "pip" }}
 COPY requirements.txt ./
+{{ if eq .server_type "WSGI" }}
+{{ if eq .wsgi_server "uwsgi" }}
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev && \
+    pip install --no-cache-dir --user -r requirements.txt {{ .wsgi_server }} && \
+    rm -rf /var/lib/apt/lists/*
+{{ else }}
 RUN pip install --no-cache-dir --user -r requirements.txt {{ .wsgi_server }}
+{{ end }}
+{{ else }}
+{{ if eq .asgi_server "uvicorn" }}
+RUN pip install --no-cache-dir --user -r requirements.txt "uvicorn[standard]"
+{{ else }}
+RUN pip install --no-cache-dir --user -r requirements.txt {{ .asgi_server }}
+{{ end }}
+{{ end }}
 {{ else if eq .dependency_manager "poetry" }}
 RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock* ./
+{{ if eq .server_type "WSGI" }}
+{{ if eq .wsgi_server "uwsgi" }}
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev && \
+    poetry config virtualenvs.create false && poetry install --only main --no-root && \
+    pip install --no-cache-dir {{ .wsgi_server }} && \
+    rm -rf /var/lib/apt/lists/*
+{{ else }}
 RUN poetry config virtualenvs.create false && poetry install --only main --no-root && pip install --no-cache-dir {{ .wsgi_server }}
+{{ end }}
+{{ else }}
+{{ if eq .asgi_server "uvicorn" }}
+RUN poetry config virtualenvs.create false && poetry install --only main --no-root && pip install --no-cache-dir "uvicorn[standard]"
+{{ else }}
+RUN poetry config virtualenvs.create false && poetry install --only main --no-root && pip install --no-cache-dir {{ .asgi_server }}
+{{ end }}
+{{ end }}
 {{ else if eq .dependency_manager "uv" }}
 RUN pip install --no-cache-dir uv
 COPY pyproject.toml uv.lock* ./
+{{ if eq .server_type "WSGI" }}
+{{ if eq .wsgi_server "uwsgi" }}
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev && \
+    uv pip install --system --no-cache-dir . && \
+    uv pip install --system --no-cache-dir {{ .wsgi_server }} && \
+    rm -rf /var/lib/apt/lists/*
+{{ else }}
 RUN uv pip install --system --no-cache-dir . && \
     uv pip install --system --no-cache-dir {{ .wsgi_server }}
+{{ end }}
+{{ else }}
+{{ if eq .asgi_server "uvicorn" }}
+RUN uv pip install --system --no-cache-dir . && \
+    uv pip install --system --no-cache-dir "uvicorn[standard]"
+{{ else }}
+RUN uv pip install --system --no-cache-dir . && \
+    uv pip install --system --no-cache-dir {{ .asgi_server }}
+{{ end }}
+{{ end }}
 {{ else }}
 RUN pip install --no-cache-dir pipenv
 COPY Pipfile Pipfile.lock* ./
+{{ if eq .server_type "WSGI" }}
+{{ if eq .wsgi_server "uwsgi" }}
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev && \
+    pipenv install --system && \
+    pip install --no-cache-dir {{ .wsgi_server }} && \
+    rm -rf /var/lib/apt/lists/*
+{{ else }}
 RUN pipenv install --system && pip install --no-cache-dir {{ .wsgi_server }}
+{{ end }}
+{{ else }}
+{{ if eq .asgi_server "uvicorn" }}
+RUN pipenv install --system && pip install --no-cache-dir "uvicorn[standard]"
+{{ else }}
+RUN pipenv install --system && pip install --no-cache-dir {{ .asgi_server }}
+{{ end }}
+{{ end }}
 {{ end }}
 
 FROM python:{{ .python_version }}-slim
@@ -44,8 +105,22 @@ USER app
 
 EXPOSE {{ .app_port }}
 
+{{ if eq .server_type "WSGI" }}
 {{ if eq .wsgi_server "gunicorn" }}
-CMD ["gunicorn", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "{{ .workers }}", "{{ .wsgi_module }}"]
+CMD ["gunicorn", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "{{ .workers }}", "{{ .app_module }}"]
+{{ else if eq .wsgi_server "waitress" }}
+CMD ["waitress-serve", "--host", "0.0.0.0", "--port", "{{ .app_port }}", "--threads", "{{ .workers }}", "{{ .app_module }}"]
 {{ else }}
-CMD ["uwsgi", "--http", "0.0.0.0:{{ .app_port }}", "--module", "{{ .wsgi_module }}", "--processes", "{{ .workers }}", "--master"]
+CMD ["uwsgi", "--http", "0.0.0.0:{{ .app_port }}", "--module", "{{ .app_module }}", "--processes", "{{ .workers }}", "--master", "--enable-threads"]
+{{ end }}
+{{ else }}
+{{ if eq .asgi_server "uvicorn" }}
+CMD ["uvicorn", "{{ .app_module }}", "--host", "0.0.0.0", "--port", "{{ .app_port }}", "--workers", "{{ .workers }}"]
+{{ else if eq .asgi_server "hypercorn" }}
+CMD ["hypercorn", "{{ .app_module }}", "--bind", "0.0.0.0:{{ .app_port }}", "--workers", "{{ .workers }}"]
+{{ else if eq .asgi_server "daphne" }}
+CMD ["daphne", "-b", "0.0.0.0", "-p", "{{ .app_port }}", "{{ .app_module }}"]
+{{ else }}
+CMD ["granian", "--interface", "asgi", "--host", "0.0.0.0", "--port", "{{ .app_port }}", "--workers", "{{ .workers }}", "{{ .app_module }}"]
+{{ end }}
 {{ end }}

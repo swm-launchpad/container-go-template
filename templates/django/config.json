@@ -58,18 +58,31 @@
       "description": "Django 서버가 실행될 포트 번호. WSGI 서버 실행 시 이 포트로 바인딩되며, 네트워크 포트와 자동으로 동기화됩니다."
     },
     {
-      "label": "WSGI 모듈",
-      "name": "wsgi_module",
+      "default": "WSGI",
+      "label": "서버 타입",
+      "name": "server_type",
+      "options": [
+        "WSGI",
+        "ASGI"
+      ],
+      "type": "select",
+      "category": "required",
+      "description": "WSGI: 전통적인 Django (동기), ASGI: Django 3.0+ 비동기 지원 (Channels, async views)"
+    },
+    {
+      "label": "애플리케이션 모듈",
+      "name": "app_module",
       "options": [
         "config.wsgi:application",
+        "config.asgi:application",
         "myproject.wsgi:application",
-        "app.wsgi:application"
+        "myproject.asgi:application"
       ],
       "type": "select",
       "category": "required",
       "allow_custom": true,
       "custom_label": "기타(직접 입력)",
-      "description": "Django 프로젝트의 WSGI 모듈 경로를 선택하세요. settings.py가 있는 디렉토리의 wsgi.py를 찾아 '디렉토리명.wsgi:application' 형식으로 입력합니다."
+      "description": "Django 프로젝트의 WSGI/ASGI 모듈 경로. WSGI: 디렉토리명.wsgi:application, ASGI: 디렉토리명.asgi:application"
     },
     {
       "default": "gunicorn",
@@ -77,20 +90,35 @@
       "name": "wsgi_server",
       "options": [
         "gunicorn",
+        "waitress",
         "uwsgi"
       ],
       "type": "select",
       "category": "advanced",
-      "description": "WSGI 애플리케이션 서버. Gunicorn은 간편한 설정, uWSGI는 고급 기능 제공."
+      "description": "WSGI 애플리케이션 서버. Gunicorn: Unix 기반(기본), Waitress: 크로스 플랫폼, uWSGI: 고급 설정"
+    },
+    {
+      "default": "uvicorn",
+      "label": "ASGI 서버",
+      "name": "asgi_server",
+      "options": [
+        "uvicorn",
+        "hypercorn",
+        "daphne",
+        "granian"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "description": "ASGI 애플리케이션 서버. Uvicorn: 빠른 성능(기본), Hypercorn: HTTP/2, Daphne: Django Channels, Granian: 최고 성능"
     },
     {
       "default": "1",
-      "label": "워커 프로세스 수",
+      "label": "워커/스레드 수",
       "name": "workers",
       "options": [],
       "type": "number",
       "category": "advanced",
-      "description": "동시 요청 처리를 위한 워커 프로세스 수. CPU 코어 수와 동일하게 설정 권장."
+      "description": "동시 요청 처리 수. WSGI(Gunicorn/uWSGI)는 워커 프로세스, Waitress는 스레드, ASGI는 워커 프로세스. CPU 코어 수와 동일하게 설정 권장."
     }
   ]
 }
