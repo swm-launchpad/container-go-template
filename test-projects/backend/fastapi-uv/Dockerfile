@@ -5,7 +5,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv
 COPY pyproject.toml uv.lock* ./
 RUN uv pip install --system --no-cache-dir . && \
-    uv pip install --system --no-cache-dir uvicorn
+    uv pip install --system --no-cache-dir "uvicorn[standard]"
 
 FROM python:3.12-slim
 
