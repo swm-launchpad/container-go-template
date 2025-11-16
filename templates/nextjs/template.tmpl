@@ -64,15 +64,24 @@ RUN addgroup --system --gid 1001 nodejs && \
 RUN npm install -g pnpm
 {{ end }}
 
+{{ if eq .build_output "standalone" }}
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+{{ else }}
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+{{ end }}
 
 USER nextjs
 
 EXPOSE 3000
 
+{{ if eq .build_output "standalone" }}
+CMD ["node", "server.js"]
+{{ else }}
 {{ if eq .package_manager "npm" }}
 CMD ["npm", "start"]
 {{ else if eq .package_manager "yarn" }}
@@ -81,4 +90,5 @@ CMD ["yarn", "start"]
 CMD ["pnpm", "start"]
 {{ else }}
 CMD ["bun", "--bun", "run", "start"]
+{{ end }}
 {{ end }}

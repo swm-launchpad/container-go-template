@@ -40,6 +40,18 @@
       ],
       "type": "select",
       "category": "required"
+    },
+    {
+      "default": "standalone",
+      "label": "빌드 출력 모드",
+      "name": "build_output",
+      "options": [
+        "standard",
+        "standalone"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "description": "Standalone: Docker 이미지 크기 최대 97% 감소(권장), Standard: 일반 빌드"
     }
   ]
 }
