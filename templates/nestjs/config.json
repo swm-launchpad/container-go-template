@@ -40,6 +40,31 @@
       ],
       "type": "select",
       "category": "required"
+    },
+    {
+      "default": "production",
+      "label": "빌드 모드",
+      "name": "build_mode",
+      "options": [
+        "development",
+        "production"
+      ],
+      "type": "select",
+      "category": "optional",
+      "description": "빌드 모드 선택. production은 최적화된 빌드를 생성하고, development는 소스맵과 개발 도구를 포함합니다."
+    },
+    {
+      "default": "none",
+      "label": "프로세스 매니저",
+      "name": "process_manager",
+      "options": [
+        "none",
+        "pm2",
+        "nodemon"
+      ],
+      "type": "select",
+      "category": "advanced",
+      "description": "프로세스 관리 도구. none: 직접 실행, PM2: 프로덕션 배포 권장(자동 재시작, 클러스터링), Nodemon: 개발 환경 권장(파일 변경 감지)"
     }
   ]
 }

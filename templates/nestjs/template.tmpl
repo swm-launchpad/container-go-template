@@ -40,6 +40,7 @@ FROM node:{{ .node_version }}-alpine
 
 WORKDIR /app
 
+{{ if eq .build_mode "production" }}
 {{ if eq .package_manager "npm" }}
 COPY package*.json ./
 RUN npm install --only=production --no-audit --prefer-offline
@@ -53,13 +54,42 @@ RUN npm install -g pnpm && pnpm install --prod
 COPY package.json bun.lockb* ./
 RUN bun install --production
 {{ end }}
+{{ else }}
+{{ if eq .package_manager "npm" }}
+COPY package*.json ./
+RUN npm install --no-audit --prefer-offline
+{{ else if eq .package_manager "yarn" }}
+COPY package.json yarn.lock* ./
+RUN yarn install
+{{ else if eq .package_manager "pnpm" }}
+COPY package.json pnpm-lock.yaml* ./
+RUN npm install -g pnpm && pnpm install
+{{ else }}
+COPY package.json bun.lockb* ./
+RUN bun install
+{{ end }}
+{{ end }}
+
+{{ if eq .process_manager "pm2" }}
+RUN npm install -g pm2
+{{ else if eq .process_manager "nodemon" }}
+RUN npm install -g nodemon
+{{ end }}
 
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
+ENV NODE_ENV={{ .build_mode }}
+
+{{ if eq .process_manager "pm2" }}
+CMD ["pm2-runtime", "start", "dist/main.js", "--name", "nestjs-app"]
+{{ else if eq .process_manager "nodemon" }}
+CMD ["nodemon", "dist/main.js"]
+{{ else }}
 {{ if eq .package_manager "bun" }}
 CMD ["bun", "run", "dist/main"]
 {{ else }}
 CMD ["node", "dist/main"]
+{{ end }}
 {{ end }}
